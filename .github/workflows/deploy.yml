@@ -1,6 +1,9 @@
 name: deploy.yml
 
-on: push
+on:
+  push:
+    tags:        
+      - '*'
 
 jobs:
   deploy:
