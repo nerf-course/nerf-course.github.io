@@ -1,37 +1,25 @@
-## Welcome to GitHub Pages
+## Compiling / publishing
 
-You can use the [editor on GitHub](https://github.com/nerf-course/nerf-course.github.io/edit/main/README.md) to maintain and preview the content for your website in Markdown files.
+Visit the page [https://airtable.com/account#](https://airtable.com/account#) and
+`Generate API key`. You can then add this key to either `.bash_profile` or `.bashrc` as (the key below is a dummy, use your own):
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
-
-### Markdown
-
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
-
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
+```
+export AIRTABLE_API_KEY="key60OcgX5W85SoGd"
 ```
 
-For more details see [Basic writing and formatting syntax](https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax).
+To check everythign works, try to compile the blog:
+```
+python3 -m pip install pyairtable
+python3 -m pip install install tqdm
+python3 compile.py
+```
+
+Then push your commit (with the updated `index.md`) to the main branch for it to be auto-published to [https://nerf-course.github.io](https://nerf-course.github.io)
 
 ### Jekyll Themes
 
 Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/nerf-course/nerf-course.github.io/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
 
-### Support or Contact
+### Jekyll Support
 
 Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
