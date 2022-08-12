@@ -10,7 +10,7 @@ export AIRTABLE_API_KEY="key60OcgX5W85SoGd"
 To check everythign works, try to compile the blog:
 ```
 python3 -m pip install pyairtable
-python3 -m pip install install tqdm
+python3 -m pip install tqdm
 python3 compile.py
 ```
 

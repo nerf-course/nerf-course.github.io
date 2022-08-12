@@ -1,0 +1,32 @@
+name: deploy.yml
+
+on:
+  push:
+    tags:        
+      - '*'
+  
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.7
+
+    - name: Install packaging requirements
+      run: |
+        python -m pip install --upgrade pip
+        pip install -U pyairtable
+        pip install -U tqdm
+
+    - name: executing setup w/ a particular tag
+      env:
+        AIRTABLE_API_KEY: ${{ secrets.AIRTABLE_API_KEY }}
+      run:
+        python3 compile.py
