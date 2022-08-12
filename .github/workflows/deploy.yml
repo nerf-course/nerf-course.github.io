@@ -2,7 +2,7 @@ name: deploy.yml
 
 on:
   issues:
-    types: opened
+    types: [opened]
 
 jobs:
   deploy:
@@ -29,6 +29,10 @@ jobs:
       run:
         python3 compile.py
 
-    - uses: stefanzweifel/git-auto-commit-action@v4
+    - name: commit index.md into the repo
+      uses: stefanzweifel/git-auto-commit-action@v4
       with:
         commit_message: re-compiled index.md
+        
+    - name: close automation issue
+      uses: peter-evans/close-issue@v2
