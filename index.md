@@ -6,6 +6,8 @@ This should be a description of why the topic is covered in the course. Note you
 ![This will become the caption of the image](https://dellaert.github.io/images/NeRF/ON-teaser.png)
 TL;DR of the main auto-encoder idea, and encoding occupancy
 
+TEST AUTOMATION
+
 ### [DeepSDF](https://github.com/facebookresearch/DeepSDF) @ CVPR 2019 – [arXiv](https://arxiv.org/abs/1901.05103) 
 Given a mesh representation of an object, this method converts the mesh to a Signed Distance Function (SDF) and stores this function in a neural network. The main idea is to use an auto-decoder (decoder + latent codes), that takes as input point coordinates and a shape latent code and outputs SDF value. The decoder weights and shape codes are optimized using MAP during training and in test time  only the shape code is optimized. Directly optimizing latent codes in an auto-decoder helps achieve finer details and generalize to test objects better, while in an auto-encoder setting the encoder always expects to receive inputs similar to what its seen at train time. Therefore in an auto-encoder some info and details are lost through encoding to lower dimensions while optimizing latent codes directly can overfit better to the given input.
 
