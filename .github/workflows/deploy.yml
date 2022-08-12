@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+      with:
+        ref: ${{ github.head_ref }}
 
     - name: Set up Python
       uses: actions/setup-python@v2
@@ -27,3 +29,7 @@ jobs:
         AIRTABLE_API_KEY: ${{ secrets.AIRTABLE_API_KEY }}
       run:
         python3 compile.py
+
+    - uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: re-compiled index.md
