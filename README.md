@@ -16,6 +16,10 @@ python3 compile.py
 
 Then push your commit (with the updated `index.md`) to the main branch for it to be auto-published to [https://nerf-course.github.io](https://nerf-course.github.io)
 
+### Automated compile
+
+[Guide](https://support.airtable.com/hc/en-us/articles/4408177288599-Airtable-automation-actions-GitHub): how to connect airtables with github automations
+
 ### Jekyll Themes
 
 Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/nerf-course/nerf-course.github.io/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
