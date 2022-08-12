@@ -1,9 +1,8 @@
 name: deploy.yml
 
 on:
-  push:
-    tags:        
-      - '*'
+  issues:
+    types: opened
 
 jobs:
   deploy:
