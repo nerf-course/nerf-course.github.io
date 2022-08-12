@@ -8,23 +8,22 @@ import tqdm
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 
-class View(object):
+class View():
   def __init__(self, url:str, table:str, view:str):
     self._view=view
     api_key = self.get_airtable_api_key()
     base_id = self.get_base_id(url)
     self._table = pyairtable.Table(api_key, base_id, table)
 
-  def get_base_id(self, url):
-    """e.g. url=https://airtable.com/appQTptcq51TTYJAc"""
+  def get_base_id(self, url="https://airtable.com/appQTptcq51TTYJAc"):
     prefix = "https://airtable.com/"
     assert url.startswith(prefix)
     return url[len(prefix):]
 
-  def get_airtable_api_key(self, mode="ENV"):
+  def get_airtable_api_key(self):
     try:
       return os.environ["AIRTABLE_API_KEY"]
-    except:
+    except KeyError:
       # TODO: mode="JSON" alike frank's
       print("ERROR: could not find environment variable 'AIRTABLE_API_KEY'.")
 
@@ -58,9 +57,9 @@ papers_course = View(url, table="Papers", view="Course")
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 
-output_path = Path("output/andrea01_course.md")
+output_path = Path("index.md")
 output_path.parent.mkdir(parents=True, exist_ok=True)
-with open("output/andrea01_course.md", 'w') as file:
+with open(output_path, 'w') as file:
   topics = topics_main.all()
   for topic in tqdm.tqdm(topics):
     # TODO: could be done with filter, but not working?
@@ -74,7 +73,7 @@ with open("output/andrea01_course.md", 'w') as file:
     # --- Fetch the papers in a topic
     paper_keys = topic["Papers"]
     papers = [papers_course.get(key) for key in paper_keys]
-    
+
     # --- Prints paper content
     try:
       for ipaper, paper in enumerate(papers):
