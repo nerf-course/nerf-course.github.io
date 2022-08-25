@@ -82,7 +82,7 @@ Light fields model less general environments than radiance fields assuming being
 This work is an interesting use of transformers in neural implicit fields and the results show impressive modeling of reflection and refraction. Because there is no volume rendering and integration, here the network is able to model inconsistencies like refraction between different views and memorize them.
 
 ### [Learning Neural Light Fields](https://neural-light-fields.github.io/) @ CVPR 2022 – [arXiv](https://arxiv.org/abs/2112.01523) 
-![LLLF architecture](nerf-course.github.io/images/learninglightfields.png)
+![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/blob/9c7de1dade9468eddbd0472c2b56acbdd088f97d/images/learninglightfields.png)
 How about rather than learning point color/density and manually integrating (Nerf), we just learned the integral sum directly for a ray? In a light field formulation rather than the 3D point input is 4D representing a portion of ray parameterized by its intersection with two planes. The issue is that in comparison to having the 3D point as input, a portion of ray is unique to the specific ray and hard to aggregate over rays or generalize to unseen rays. Their solution is first to add an embedding network before the positional encoding to align and affine transform the ray planes. Secondly, they subdivide the space into local voxels and learn local light fields and render based on the opacity of ray portion when it hits a voxel. Given the constant radiancy and forward facing assumptions this method results in better modeling of shiny or reflective surfaces compared to Nerf.
 
 # Image Based Rendering
@@ -108,7 +108,8 @@ This paper, very much like NGLOD but in the realm of NeRFs, it explores the idea
 The quality of reconstruction is impressive and can beat baselines like NeRF and SRN with higher levels of LOD while having faster renderings.
 
 ### [Mip-NeRF](https://jonbarron.info/mipnerf/) @ ICCV 2021 – [arXiv](https://arxiv.org/abs/2103.13415) 
-![mipnerf](https://user-images.githubusercontent.com/3310961/118305131-6ce86700-b49c-11eb-99b8-adcf276e9fe9.jpg)
+![](https://user-images.githubusercontent.com/3310961/118305131-6ce86700-b49c-11eb-99b8-adcf276e9fe9.jpg) 
+* MipNerf cone tracing vs Nerf ray tracing *
 Sampling points along the ray for rendering using Nerf is an important aspect of high quality results. The typical approach is to have a two phase course and fine sampling strategies and relearn the implicit function to avoid aliasing. MipNerf suggests rather than a narrow ray, we consider a cone with a base of pixel width. Then we can integrate the points in frustums to get an approximate color/density. They approximate the frustum with a multivariate Gaussian and then transform them into the expected positional encoding of the points in the frustum. This method encodes the scale of frustums in the positional encoding which results in better disambiguation and antialiasing. Also, since they train a single network rather than a course and a fine version they are potentially faster. The results show if Nerf is super sampled to match the performance of MipNerf, MipNerf would be 22x faster.
 
 ### [Mip-NeRF-360](https://jonbarron.info/mipnerf360/) @ CVPR 2022 – [arXiv](https://arxiv.org/abs/2111.12077) 
@@ -147,6 +148,8 @@ Casting rays (mapping 3D points and potential pixel values) requires the camera 
 ### [Nerf--](https://nerfmm.active.vision/) @ Arxiv 2021 – [arXiv](https://arxiv.org/abs/2102.07064) 
 ![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/148b19f35030413e232760ee2e254c2332efc0c5/images/nerf--.png)
 *Nerf-- : Camera parameters are learned alongside network weights in NeRF--*
+
+
 To grasp the difficulty level of learning a NeRF with unknown camera parameters, this paper analyzes learning camera poses and intrinsic parameters jointly with NeRF weights. All of the experiments are done on forward-facing scenes to simplify the problem and yet it is shown that in many cases if the camera path is slightly perturbed the camera pose estimation fails (and sometimes COLMAP also fails in this scenario!). This paper along with providing a dataset with perturbed camera poses, shows that joint learning of camera parameters and NeRF weights is trickier than just setting these parameters as learnable variables. 
 
 ### [GARF](https://sfchng.github.io/garf/) @ Arxiv 2022 – [arXiv](https://arxiv.org/abs/2204.05735) 
