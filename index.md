@@ -82,7 +82,7 @@ Light fields model less general environments than radiance fields assuming being
 This work is an interesting use of transformers in neural implicit fields and the results show impressive modeling of reflection and refraction. Because there is no volume rendering and integration, here the network is able to model inconsistencies like refraction between different views and memorize them.
 
 ### [Learning Neural Light Fields](https://neural-light-fields.github.io/) @ CVPR 2022 – [arXiv](https://arxiv.org/abs/2112.01523) 
-![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/148b19f35030413e232760ee2e254c2332efc0c5/images/learninglightfields.png)
+![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/learninglightfields.png)
 How about rather than learning point color/density and manually integrating (Nerf), we just learned the integral sum directly for a ray? In a light field formulation rather than the 3D point input is 4D representing a portion of ray parameterized by its intersection with two planes. The issue is that in comparison to having the 3D point as input, a portion of ray is unique to the specific ray and hard to aggregate over rays or generalize to unseen rays. Their solution is first to add an embedding network before the positional encoding to align and affine transform the ray planes. Secondly, they subdivide the space into local voxels and learn local light fields and render based on the opacity of ray portion when it hits a voxel. Given the constant radiancy and forward facing assumptions this method results in better modeling of shiny or reflective surfaces compared to Nerf.
 
 # Image Based Rendering
