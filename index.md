@@ -124,14 +124,10 @@ At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praese
 At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.
 
 ### [Stereo Radiance Fields](https://virtualhumans.mpi-inf.mpg.de/srf/) @ CVPR 2021 – [arXiv](https://arxiv.org/abs/2104.06935) 
-![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/Stereo.png)
-*caption*
+![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/Stereo1.png)
+*Left: Stereo Radiance Field pipeline, Right: Intution for inferring radiance out of stereo image projection*
 
 This paper shows that it is possible to learn a 3D representation of scene appearance and geometry using only sparse spread out images and further generalize the learned component to other scenes. In this paper, given a set o sparse stereo reference images of a scene, density and radiance of each point is predicted by finding correspondence to that point in the reference images. A comparison based learnable module is introduced that given a point on the novel view, compares the features extracted from the projected point on to reference views. If the features align then the point is on an opaque unoccluded surface hence has high density value and similar RGB value, otherwise it is probably in the air and has small density. 
-
-
-![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/Stereo-intuition.png)
-*Intuition for stereo comparison and inferring density*
 
 
 A learnable module is able to compare feature vectors from all reference views and find correspondence vector which is then passed to an MLP to output RGB and density. After that volume rendering is performed much like NeRF.
