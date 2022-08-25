@@ -14,9 +14,17 @@ Compared to previous work which use voxel, mesh, or point cloud representation o
  and mostly better quantitative results. Interestingly it is slightly over-smooth which is an inherent property of modeling with an MLP. This is reflected in inferior L1-chamfer distance compared to AtlasNet (mesh based).
 
 ### [DeepSDF](https://github.com/facebookresearch/DeepSDF) @ CVPR 2019 – [arXiv](https://arxiv.org/abs/1901.05103) 
+![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/DeepSDF.png)
+*Left: Signed Distance Function, Right: Auto-decoder vs. Auto-encoder*
+
+
 Exploring the idea of having 3D representations using neural implicit fields to achieve high quality reconstruction and compact models, this paper introduces SDF functions, a useful representation of object geometry, stored in deep networks. Given a mesh representation of an object, this method converts the mesh to a Signed Distance Function (SDF) where a point inside the object has negative value, zero on the surface and positive outside. The main idea is to use an auto-decoder (decoder + latent codes), that takes as input point coordinates and a shape latent code and outputs SDF value. The decoder weights and shape codes are optimized using MAP during training and in test time  only the shape code is optimized. Directly optimizing latent codes in an auto-decoder helps achieve finer details and generalize to test objects better, while in an auto-encoder setting the encoder always expects to receive inputs similar to what its seen at train time. Therefore in an auto-encoder some info and details are lost through encoding to lower dimensions while optimizing latent codes directly can overfit better to the given input.
 
 ### [NASA](https://virtualhumans.mpi-inf.mpg.de/nasa/) @ ECCV 2020 – [arXiv](https://arxiv.org/abs/1912.03207) 
+![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/NASA.png)
+*NASA: three different models of non-rigid body*
+
+
 Implicit neural representations for articulated and non-rigid bodies is an interesting problem that is addressed in this paper. NASA uses an occupancy net for articulated bodies and progressively presents 3 models of body, where in first one the body is a rigid object, then a piece-wise rigid object and finally deformable. This paper shows the importance of converting coordinates to canonical frame before passing it into an MLP (in this case query/joint coordinates are converted to canonical frame by inverse joint poses). This is due to the fact that MLPs cannot model matrix multiplication well enough and the explicit conversion on input helps MLP to model the occupancy.
 
 # Hierarchical
@@ -26,6 +34,10 @@ At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praese
 At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.
 
 ### [NGLOD](https://nv-tlabs.github.io/nglod/) @ CVPR 2021 – [arXiv](https://arxiv.org/abs/2101.10994) 
+![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/NGLOD.png)
+*Combining embedded values from different LODs in NGLOD pipeline*
+
+
 Neural implicit fields are usually stored in fixed-size neural networks and for rendering there is a computationally heavy and time consuming process of many queries from the network for each pixel. To allow real-time and high-quality rendering, NGLOD uses an Octree based approach to model an SDF function with different levels of detail. At every level of detail (LOD) there exists a grid with certain resolution. For each point the embedded values in the eight corners of all the voxels containing the point, up to the level of detail wanted, are bilinearly interpolated and summed and then passed through an MLP to predict the SDF value.
 
  For rendering, a combination of AABB intersection and sphere tracing is introduced. If a point reached by the ray is inside a dense voxel then by sphere tracing using SDF value the surface is found, otherwise the AABB intersection algorithm proceeds to the next voxel. This rendering is super fast and of high quality, but beware! the Octree structure is not learned and consider known.
@@ -39,6 +51,10 @@ At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praese
 At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.
 
 ### [SRN](https://vsitzmann.github.io/srns/) @ NeurIPS 2019 – [arXiv](https://arxiv.org/abs/1906.01618) 
+![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/SRN.png)
+*SRN pipeline*
+
+
 Joint modeling of shape and appearance in neural implicit fields is a difficult problem. This paper is one of the first papers that introduces an algorithm for tackling this problem. The idea is to first identify the surface and then learn the color for the surface. 
 
 First a differentiable renderer is designed with a differentiable ray marching method that is modeled by a LSTM. The LSTM finds surface depth by iterative refinements. An MLP then maps the 3D coordinate of the point to appearance features and finally RGB color. The colors are not view dependent. This model generalizes to category-level modeling through use of a hyper-net that maps MLP weights to a lower-dimensional sub-space that represents a category's appearance. A comparison with NeRF on how just adding volume rendering and positional encoding to the almost the same architecture boosts the PSNR much higher as opposed to this paper that searches for the surface using LSTM is interesting. 
@@ -47,6 +63,10 @@ First a differentiable renderer is designed with a differentiable ray marching m
 At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.
 
 ### [Deffered Neural Rendering](https://niessnerlab.org/projects/thies2019neural.html) @ SIGGRAPH 2019 – [arXiv](https://arxiv.org/abs/1904.12356) 
+![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/Deffered.png)
+*Deferred Neural Rendering applications*
+
+
 Detailed and precise texture modeling is essential for a good inverse rendering model. This paper focuses on having learned textures to model view-dependent appearance. The geometry is not modeled. Unlike traditional texture maps, learned neural textures are used to store high dimensional features rather than RGB. These can be converted to pixel color using standard texel-to-pixel pipelines but with a differentiable renderer. The texture sampling is hierarchical similar to mimaps to overcome resolution differences. The sampling is made differentiable through bilinear interpolation. 
 One of the distinct and interesting results in this paper is that instead of using a fully connected network as a renderer, using U-Net renderer results in higher quality textures through reasoning about the neighboring areas to have pixel-level consistency. Also animation synthesis is particularly easy and fast using this approach, for example in face reenactment because this approach learns the texture for an actors face completely, for different expression there is no need for extra textures stored and queried.
 
@@ -57,6 +77,10 @@ At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praese
 At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.
 
 ### [IDR](https://lioryariv.github.io/idr/) @ NeurIPS 2020 – [arXiv](https://arxiv.org/abs/2003.09852) 
+![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/IDR.png)
+*IDR inputs and outputs*
+
+
 Modeling shape and appearance jointly is the goal of many recent papers, with NeRF being the most popular. But this paper achieves this goal by completely disentangling geometry and appearance. This paper models object geometry through first modeling the object's SDF and then using the inferred surface to pass surface position and normal through a renderer that models object's appearance. 
 
 This model is view-dependent and through a concept introduced in the paper name P-universality, it is shown to model a point's color both view direction and surface normal is needed. View direction models specularity and surface normal helps to disentangle geometry from appearance and be able to model deformations in the object too! With this formulation a renderer learned on an object can be attached to SDF of another object to give the appearance and material's look of one object to another. 
@@ -70,12 +94,20 @@ The one, the only, NeRF !!!!
 At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.
 
 ### [LFN: Light Field Networks](https://www.vincentsitzmann.com/lfns) @ NeurIPS 2021 – [arXiv](https://arxiv.org/abs/2106.02634) 
+![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/LFN.png)
+*Getting pixel color from LFN through only one network query*
+
+
 The classic parametrization of light fields limits these fields to forward facing or other constrained spaces and does not allow for 360 degrees modeling of the scenes. In this paper a new parameterization for 4D light fields is introduced. This parameterization is based on the 6-dimensional Plücker coordinates in which light fields lie on a 4-dimensional manifold. This parametrization allows or 360 views of scenes unlike the traditional parametrization of light fields. The 6D coordinate is taken as input to a MLP and ray color is given as output. Again, because there is no volume rendering or integration, a pixel color can be found through only one quey of the network. 
 
 
 At last a meta-learning approach based on hyper-network training is proposed to generalize to different scenes that can even model simple scenes with a single shot given. For this task the comparison to SRN is interesting, where modeling holes is hard for SRN, this model overcomes that problem.
 
 ### [Light Field Neural Rendering](https://light-field-neural-rendering.github.io/) @ CVPR 2022 – [arXiv](https://arxiv.org/abs/2112.09687) 
+![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/LFNR.png)
+*The two transformers used in LFNR*
+
+
 Light fields model less general environments than radiance fields assuming being in a convex hull of the object and model no occlusions, therefore they can be modeled with simpler and less expensive models than radiance fields. This work models 4D light field with the use of transformers. Given a sparsely observed scene, this method uses epipolar geometry constraints (much like IBR) to model geometry with help of a transformer and then view-dependent appearance of a light field through a second transformer. Two closest reference views to target view are selected and the sampled points along target rays are projected onto them. First transformer decides which one of the sampled points on the ray is closest to the query point through predicting attentions. Second transformer decides which of the reference view directions to pay more attention to.
 
 
@@ -92,7 +124,17 @@ At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praese
 At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.
 
 ### [Stereo Radiance Fields](https://virtualhumans.mpi-inf.mpg.de/srf/) @ CVPR 2021 – [arXiv](https://arxiv.org/abs/2104.06935) 
-This paper shows that it is possible to learn a 3D representation of scene appearance and geometry using only sparse spread out images and further generalize the learned component to other scenes. In this paper, given a set o sparse stereo reference images of a scene, density and radiance of each point is predicted by finding correspondence to that point in the reference images. A comparison based learnable module is introduced that given a point on the novel view, compares the features extracted from the projected point on to reference views. If the features align then the point is on an opaque unoccluded surface hence has high density value and similar RGB value, otherwise it is probably in the air and has small density. a learnable module is able to compare feature vectors from all reference views and find correspondence vector which is then passed to an MLP to output RGB and density. After that volume rendering is performed much like NeRF.
+![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/Stereo.png)
+*caption*
+
+This paper shows that it is possible to learn a 3D representation of scene appearance and geometry using only sparse spread out images and further generalize the learned component to other scenes. In this paper, given a set o sparse stereo reference images of a scene, density and radiance of each point is predicted by finding correspondence to that point in the reference images. A comparison based learnable module is introduced that given a point on the novel view, compares the features extracted from the projected point on to reference views. If the features align then the point is on an opaque unoccluded surface hence has high density value and similar RGB value, otherwise it is probably in the air and has small density. 
+
+
+![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/Stereo-intuition.png)
+*Intuition for stereo comparison and inferring density*
+
+
+A learnable module is able to compare feature vectors from all reference views and find correspondence vector which is then passed to an MLP to output RGB and density. After that volume rendering is performed much like NeRF.
 
  The comparison module learns useful comparison metrics to find correspondences and can be transferred to unseen scenes for generalization, then for better uality it can be fine-tuned on that scene. A failure case is when trying to model reflections and texture-less regions where finding correspondence is naturally hard. This is a good substitute for NeRF if sparse set of images is available of the scene. 
 
@@ -103,6 +145,10 @@ At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praese
 At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.
 
 ### [NSVF](https://github.com/facebookresearch/NSVF) @ NeurIPS 2020 – [arXiv](https://arxiv.org/abs/2007.11571) 
+![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/NSVF.png)
+*Self-Pruning for different LODs during training*
+
+
 This paper, very much like NGLOD but in the realm of NeRFs, it explores the idea of hierarchical NeRFs to speed up rendering. Using just one big MLP and doing volume rendering through hundreds of queries for each ray is slow and computationally expensive. Here instead the space is modeled as an explicit voxel grid and there exists tiny MLPs for each voxel that process the embedded values at the 8 corners. Through the learning process voxels with lower densities are pruned and the radiance is therefore stored in an octree of tiny MLPs (here the structure of octree is actually learned through pruning unlike NGLOD). Therefore the rendering is very fast and is done through an AABB intersection process to find the voxel containing the surface hit by a ray and then the color of the surface is extracted from that voxel by a forward pass of a small MLP. 
 
 The quality of reconstruction is impressive and can beat baselines like NeRF and SRN with higher levels of LOD while having faster renderings.
@@ -113,6 +159,10 @@ The quality of reconstruction is impressive and can beat baselines like NeRF and
 Sampling points along the ray for rendering using Nerf is an important aspect of high quality results. The typical approach is to have a two phase course and fine sampling strategies and relearn the implicit function to avoid aliasing. MipNerf suggests rather than a narrow ray, we consider a cone with a base of pixel width. Then we can integrate the points in frustums to get an approximate color/density. They approximate the frustum with a multivariate Gaussian and then transform them into the expected positional encoding of the points in the frustum. This method encodes the scale of frustums in the positional encoding which results in better disambiguation and antialiasing. Also, since they train a single network rather than a course and a fine version they are potentially faster. The results show if Nerf is super sampled to match the performance of MipNerf, MipNerf would be 22x faster.
 
 ### [Mip-NeRF-360](https://jonbarron.info/mipnerf360/) @ CVPR 2022 – [arXiv](https://arxiv.org/abs/2111.12077) 
+![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/mip-NerF-360.png)
+*Left: Hierarchical importance sampling scheme, Right: Coordinate reparameterization into a bounded radius*
+
+
 NeRFs fail in modeling unbounded scenes for multiple reasons, the most important being the linear parametrization of space that leads to infinite depth for unbounded scenes and also the not robust importance sampling scheme that does not scale to bigger scenes. The contributions of Mip-NeRF-360 is three-fold. First, a new parameterization for the space is introduced to model unbounded scenes. The foreground is parametrized linearly as before, but the background is contracted (based on inverse depth) into a bounded sphere of fixed radius. Therefore distant points are distributed proportional to inverse depth i.e. the further the less detailed the scene becomes. A compatible sampling method is introduced to sample uniformly in inverse depth. Second, a hierarchical scheme is used for importance sampling. Two MLPs are used, one proposal MLP and the other NeRF MLP. The NeRF MLP works as before, but the proposal MLP tries to estimate weights that show the distribution of important segments  sampled along the ray. This distribution is then sampled and points are passed to NeRF MLP for rendering. The proposal weights are supervised through a propagation loss that penalizes proposal weights that underestimate NeRF weights. This loss only affects the proposal MLP and the gradient back-prop is not applied to NeRF MLP. Lastly, a new regularizer for suppressing floaters is introduced that encourages mass being centered closely mostly at one point over the ray.
 
 # Fast Rendering
@@ -134,6 +184,10 @@ At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praese
 At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.
 
 ### [Plenoxels](https://alexyu.net/plenoxels) @ CVPR 2022 – [arXiv](https://arxiv.org/abs/2112.05131) 
+![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/Plenoxels.png)
+*Plenoxels pipeline*
+
+
 Sending queries through neural nets is expensive in computation and if the number of queries are high it takes a lot of time. For training based on novel view reconstruction error the training time can be very high because a lot of forward passes through the network is needed. In Plenoxels this problem is addressed by completely getting rid of the neural nets and instead using a explicit grid with embedded values for density and spherical harmonics (basis to encode RGB value) in the eight corners of each cell. This paper also uses ReLU on the embedding values and then passes it to a bilinear interpolation similar to ReLU Fields.  The predicted density and RGB is then passed through volume rendering. Because of fast query response this is much faster than network based volume rendering although it still used hundreds of queries for each pixel. The grid is pruned for faster and lower number of queries. Additionally different regularizers are introduced that prove useful for learning correct and robust geometry.
 
 ### [ReLUFields](https://geometry.cs.ucl.ac.uk/group_website/projects/2022/relu_fields/) @ SIGGRAPH 2022 – [arXiv](https://arxiv.org/abs/2205.10824) 
