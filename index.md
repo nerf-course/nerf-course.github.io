@@ -2,10 +2,9 @@
 To dive into the world of neural implicit fields, we first have to become familiar with the ABCs of this field. DeepSDF and OccNet are of the pioneering works that attempted at representing 3D scenes using implicit functions in the form of neural networks. These two papers introduce auto-decoders as an important architecture for storing a 3D scenes that is not prone to over-smoothing like auto-encoders and can store detailed scenes by not losing any information through low-dimensional encoding like AE. The NASA paper then follows the same trend for modeling articulated bodies, containing important architectural ideas on how to use and combine multiple implicit functions that model rigid bodies to arrive at a non-rigid body model. Lastly IMNET is a pioneering work for using 3D implicit neural models in generative uses.
 
 ### [OccNets](https://avg.is.tuebingen.mpg.de/publications/occupancy-networks) @ CVPR 2019 – [arXiv](https://arxiv.org/abs/1812.03828) 
-![This will become the caption of the image](https://dellaert.github.io/images/NeRF/ON-teaser.png)
-The goal here is to learn a non-linear function $f_\theta$ to map a 3D point into a continuous function which models the inside, surface, and outside of an object. 
-$$f_\theta(p): \mathcal{R}^3 \to [0,1]$$
-Occnets trains an MLP to classify the points into inside, outside. The MLP has 5 residual blocks. The learnt decision boundary function can then be turned into a mesh using their introduced MISE method and a hyperparameter $\tau$ which thresholds the surface. MISE basically first hierarchically zooms in to the surface by gridding. Then runs a marching cube and refines it using first and second order gradients.
+![](https://dellaert.github.io/images/NeRF/ON-teaser.png)
+The goal here is to learn a non-linear function to map a 3D point into a continuous function which models the inside, surface, and outside of an object. 
+Occnets trains an MLP to classify the points into inside, outside. The MLP has 5 residual blocks. The learnt decision boundary function can then be turned into a mesh using their introduced MISE method and a hyperparameter which thresholds the surface. MISE basically first hierarchically zooms in to the surface by gridding. Then runs a marching cube and refines it using first and second order gradients.
 
 Occnets can be adapted into different tasks by conditioning their function on different inputs. They utilize an embedding vector (no generalization) or an encoder. A Resnet  for image conditioning and a PointNet for pointcloud conditioning is used in the experiments. 
 
@@ -207,38 +206,30 @@ To grasp the difficulty level of learning a NeRF with unknown camera parameters,
 At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.
 
 # Learnable Appearance
-At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.
+NeRF excels in controlled and static scenes. In practice such meticulously gathered datasets are not always available. The papers in this section utilize robust losses, bundle adjustment techniques, and  trainable embedding vectors to model such variations in the dataset. 
 
 ### [NeRF in-the-wild](https://nerf-w.github.io/) @ CVPR 2021 – [arXiv](https://arxiv.org/abs/2008.02268) 
-At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.
+![](https://github.com/nerf-course/nerf-course.github.io/blob/main/images/nerfw.png)
+*Nerf in the wild pipeline.*
+
+Nerf models fail in an uncontrolled setup such as a collection of images on the internet. The main reason is Nerf assumes the color intensity of a point is the same from different viewpoints. But in a random collection of images of a scene there are both photometric variations such as illumination and transient objects such as moving pedestrians. 
+
+Nerf-w tackles the photometric inconsistencies by learning an image embedding and concatenating it to the input of the MLP. Essentially making the color prediction not only view dependent but image dependant as well. To handle transient objects, Nerf-w has another MLP which outputs another set of color and occupancy alongside uncertainty modeled by normal distribution. They estimate the variance of the normal distribution to be both image and view dependant. Therefore, they learn another set of image based embedding vectors. Nerf-w simply adds an L1 regularizer to the transient density to avoid explaining away of static scene with transient parts. 
+
+These techniques enables Nerf-w to handle appearance change and transient objects while still generating sharp objects.
 
 ### [Nerfies](https://nerfies.github.io/) @ ICCV 2021 – [arXiv](https://arxiv.org/abs/2011.12948) 
-At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.
+![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/nerfies.png)
+*Nerfies procedure.*
+
+Given that Nerf only works in static and controlled setup, what happens if the object of interest is deformable? Nerf automatically fails since the color to 3D point assignment varies between images. Nerfies models the deformability of an object explicity by learning a warp field. Nerfies learns a per image embedding which is used to SE(3) transform points from that image coordinate frame into the canonical coordinate frame. 
+
+The warping field introduces many ambiguities in the optimization. Nerfies incorporates and elasticity regularizer which forces the singular values of the Jacobian of the deformation to be close to identity. Also, SE(3) assumes rigidity which does not hold in all situations therefore rather than L2 optimization nerfies uses a Geman-McLure robust loss function on the singular values of the Jacobian. Also assuming access to a set of fixed background points they add background regularization. They also incorporate bundle adjustment techniques and clamp the trainable frequencies with a schedule during training similar to Barf. 
+The results show that BG modelling and SE(3) enforcement are the most impactful adjustments while all the design decisions having impact in some situations.
 
 ### [HyperNeRF](https://hypernerf.github.io/) @ SIGGRAPH Asia 2021 – [arXiv](https://arxiv.org/abs/2106.13228) 
-At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.
+![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/hypernerf.png)
+*HyperNerf procedure.*
 
-# Semantic Understanding
-At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.
-
-### [Semantic NERF](https://shuaifengzhi.com/Semantic-NeRF/) @ ICCV 2021 – [arXiv](https://arxiv.org/abs/2103.15875) 
-At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.
-
-### [NeSF](https://nesf3d.github.io/) @ TMLR 2022 – [arXiv](https://arxiv.org/abs/2111.13260) 
-At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.
-
-### [PNF](https://abhijitkundu.info/projects/pnf/) @ CVPR 2022 – [arXiv](https://arxiv.org/abs/2205.04334) 
-At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.
-
-# Generative Modeling
-At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.
-
-### [LOLNeRF](https://ubc-vision.github.io/lolnerf/) @ CVPR 2022 – [arXiv](https://arxiv.org/abs/2111.09996) 
-At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.
-
-### [GANcraft](https://nvlabs.github.io/GANcraft/) @ ICCV 2021 – [arXiv](https://arxiv.org/abs/2104.07659) 
-At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.
-
-### [EG3D](https://nvlabs.github.io/eg3d/) @ CVPR 2022 – [arXiv](https://arxiv.org/abs/2112.07945) 
-At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.
+If the object of interest moves, nerf fails to align the rays, points, and pixels and the optimization fails. In this work they tackle the challenge of non-rigid topologically changing objects. HyperNerf models a hyperspace of the 3D volume. Each image has an associated trainable warping embedding. They model a deformation field with an MLP and the ambient changes with another MLP. Therefore mapping the original 3D point into a canonical hyperspace. The deformed point and the ambient slice are positionally encoded and passed through the NeRF MLP and optimized with volume rendering. At inference they can both change appearence by moving in the topography plane and in the spatial plane.
 
