@@ -103,7 +103,7 @@ The classic parametrization of light fields limits these fields to forward facin
 At last a meta-learning approach based on hyper-network training is proposed to generalize to different scenes that can even model simple scenes with a single shot given. For this task the comparison to SRN is interesting, where modeling holes is hard for SRN, this model overcomes that problem.
 
 ### [Light Field Neural Rendering](https://light-field-neural-rendering.github.io/) @ CVPR 2022 – [arXiv](https://arxiv.org/abs/2112.09687) 
-![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/LFNR.png)
+![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/LFNR1.png)
 *The two transformers used in LFNR*
 
 
@@ -123,7 +123,7 @@ At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praese
 At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.
 
 ### [Stereo Radiance Fields](https://virtualhumans.mpi-inf.mpg.de/srf/) @ CVPR 2021 – [arXiv](https://arxiv.org/abs/2104.06935) 
-![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/Stereo1.png)
+![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/Stereo2.png)
 *Left: Stereo Radiance Field pipeline, Right: Intution for inferring radiance out of stereo image projection*
 
 This paper shows that it is possible to learn a 3D representation of scene appearance and geometry using only sparse spread out images and further generalize the learned component to other scenes. In this paper, given a set o sparse stereo reference images of a scene, density and radiance of each point is predicted by finding correspondence to that point in the reference images. A comparison based learnable module is introduced that given a point on the novel view, compares the features extracted from the projected point on to reference views. If the features align then the point is on an opaque unoccluded surface hence has high density value and similar RGB value, otherwise it is probably in the air and has small density. 
