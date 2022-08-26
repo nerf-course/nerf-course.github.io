@@ -1,6 +1,5 @@
 # Preliminaries
-This should be a description of why the topic is covered in the course. Note you can use full markdown syntax here, e.g. including having a "teaser" image for the section that will be managed automatically.
-
+To dive into the world of neural implicit fields, we first have to become familiar with the ABCs of this field. DeepSDF and OccNet are of the pioneering works that attempted at representing 3D scenes using implicit functions in the form of neural networks. These two papers introduce auto-decoders as an important architecture for storing a 3D scenes that is not prone to over-smoothing like auto-encoders and can store detailed scenes by not losing any information through low-dimensional encoding like AE. The NASA paper then follows the same trend for modeling articulated bodies, containing important architectural ideas on how to use and combine multiple implicit functions that model rigid bodies to arrive at a non-rigid body model. Lastly IMNET is a pioneering work for using 3D implicit neural models in generative uses.
 
 ### [OccNets](https://avg.is.tuebingen.mpg.de/publications/occupancy-networks) @ CVPR 2019 – [arXiv](https://arxiv.org/abs/1812.03828) 
 ![This will become the caption of the image](https://dellaert.github.io/images/NeRF/ON-teaser.png)
@@ -48,7 +47,7 @@ The results show faster rendering but comparative results to the baselines like 
 At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.
 
 # Inverse Rendering Fundamentals
-At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.
+The papers in this section are the building blocks for novel view synthesis given a set of posed images. In the first paper Scene Representation Networks (SRN) the idea of modeling appearance through and MLP that maps 3D coordinates to radiance is explored. This paper opts for first finding the position of object surfaces and then assigning color values to them which is known as surface rendering. Neural Volumes paper follows in this section that utilizes the volume rendering idea of integrating color along a viewing ray and shows promising results for volume rendering. Deffered Neural Rendering is the last paper in this section that shows useful techniques for modeling appearance on a given geometry with amazing level of detail and fast rendering.
 
 ### [SRN](https://vsitzmann.github.io/srns/) @ NeurIPS 2019 – [arXiv](https://arxiv.org/abs/1906.01618) 
 ![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/SRN.png)
@@ -91,7 +90,7 @@ The paper further can refine the camera parameters by back propagating all the w
 The one, the only, NeRF !!!!
 
 # Neural Light Fields
-At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.
+Although radiance fields are great at modeling appearance they fail in certain cases. For surface rendering, in the case of a non-solid object the modeling fails and for volume rendering, when the viewing ray does not necessarily travel along a straight line (e.g. refraction) the model fails. 4D light fields are the models that are capable of modeling these failure cases but only when applied to objects that have a convex hull and no occlusion. In 4D light fields for every viewing direction only one value of radiance is stored and hence the model only memorizes a mapping from view direction to radiance, not caring for solidness of surfaces, volumetric properties or accumulated color like surface/volume rendering. For this same reason it is incapable of modeling occlusion and fails to capture occluded surfaces. In LFN and LFNR we see different parameterization of light fields and how well they work on specularity and refraction in both forward-facing and 360 degree scenes. The Learning Neural Light Fields, we see an important idea on combining light fields with explicit grids and how that helps overcome the occlusion problem in light fields to some extent.
 
 ### [LFN: Light Field Networks](https://www.vincentsitzmann.com/lfns) @ NeurIPS 2021 – [arXiv](https://arxiv.org/abs/2106.02634) 
 ![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/LFN.png)
@@ -138,7 +137,7 @@ A learnable module is able to compare feature vectors from all reference views a
 At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.
 
 # Multi Resolution
-At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.
+Vanilla NeRF is only capable of modeling scenes at a certain resolution and in abounded domain. The papers in this section explore the idea of how to make NeRF multi-resolution and unbounded. Mip-NeRF shows that modeling radiance along a cone as opposed to a ray helps with anti-aliasing in modeling different resolutions. Mip-NeRF-360 builds on top of that idea and models unbounded scenes through a non-linear parametrization of space coordinates. It also shows an interesting hierarchical importance sampling scheme that helps with high quality rendering in big scenes. NSVF has coarse to fine learning method to learn radiance at different LODs and combines hundreds of tiny NeRFs to achieve that.
 
 ### [NSVF](https://github.com/facebookresearch/NSVF) @ NeurIPS 2020 – [arXiv](https://arxiv.org/abs/2007.11571) 
 ![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/NSVF.png)
@@ -190,7 +189,7 @@ Sending queries through neural nets is expensive in computation and if the numbe
 At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.
 
 # Camera Extrinsics
-At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.
+With NeRF training becoming increasingly fast, the bottleneck of NeRF training is running unposed images through COLMAP to get camera parameters. The line of work in this section explores ideas and challenges of jointly optimizing camera parameters along NeRF and show promising results.
 
 ### [BARF](https://chenhsuanlin.bitbucket.io/bundle-adjusting-NeRF/) @ ICCV 2021 – [arXiv](https://arxiv.org/abs/2104.06405) 
 Casting rays (mapping 3D points and potential pixel values) requires the camera calibration values. What can we do if we don't have the calibration parameters? Good news is the transformation from camera parameters to 3D points is potentially backpropagatable. Bad news is due to the positional encoding, different frequencies receive disproportionate gradients. Therefore, Barf suggests having different learning curriculums for different frequencies. They add a weight factor to reduce the gradient from the high frequencies at the start of training. The results on real scenes suggest that it can match the performance of SfM methods and render well aligned images with their bundle adjustment technique. 
