@@ -3,6 +3,9 @@ To dive into the world of neural implicit fields, we first have to become famili
 
 ### [OccNets](https://avg.is.tuebingen.mpg.de/publications/occupancy-networks) @ CVPR 2019 – [arXiv](https://arxiv.org/abs/1812.03828) 
 ![](https://dellaert.github.io/images/NeRF/ON-teaser.png)
+*An occupancy function can be modelled as the decision boundary for classifying inside and outside points.*
+
+
 The goal here is to learn a non-linear function to map a 3D point into a continuous function which models the inside, surface, and outside of an object. 
 Occnets trains an MLP to classify the points into inside, outside. The MLP has 5 residual blocks. The learnt decision boundary function can then be turned into a mesh using their introduced MISE method and a hyperparameter which thresholds the surface. MISE basically first hierarchically zooms in to the surface by gridding. Then runs a marching cube and refines it using first and second order gradients.
 
@@ -29,7 +32,10 @@ Implicit neural representations for articulated and non-rigid bodies is an inter
 The neural implicit fields showed impressive results while being less memory or computation exhaustive compared to mesh, voxel,... representations. But, they generally suffer from oversmoothing of surfaces and is not easy to scale them without compositionality. This new set of works, all show that by splitting the scene into local grids the models are now much better at modelling high frequency surfaces. They offer a trade-off between voxel based learning and implicit fields. Each work suggests different strategies for their divide and concur methods.
 
 ### [DeepLS](https://arxiv.org/abs/2003.10983) @ ECCV 2020 – [arXiv](https://arxiv.org/abs/2003.10983) 
-![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/deepls.png)*DeepLS vs DeepSDF. DeepLS divides the space into a grid and learns local SDF functions.*
+![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/deepls.png)
+*DeepLS vs DeepSDF. DeepLS divides the space into a grid and learns local SDF functions.*
+
+
 In order to learn surfaces at scale which would generalize better, DeepLS suggests fusing voxels and DeepSDF. DeepLS grids the space and for each voxel learns a local shape code. All the local voxels share the autodecoder network. Therefore, the network requires to learn a less complex embedding prior and would generalize better to multi object scenes. 
 One caveat of breaking the scene into voxels is how to merge them without getting border effects. DeepLS argues that each code should be able to reconstruct surface from the neighbouring voxels as well.
 Compared to DeepSDF, DeepLS has both impressive quantitative and qualitative results. It is able to reconstruct surfaces that are narrow (higher frequencies) much better. Also, the training time is orders of magnitude faster than DeepSDF.
@@ -46,7 +52,10 @@ Neural implicit fields are usually stored in fixed-size neural networks and for 
 The results show faster rendering but comparative results to the baselines like DeepSDF. Even with higher LODs the NGLOD qualities beat baseline.
 
 ### [ConvOccNets](https://pengsongyou.github.io/conv_onet) @ ECCV 2020 – [arXiv](https://arxiv.org/abs/2003.04618) 
-![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/convoccnet.png)*Convolutional Occupancy Networks*
+![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/convoccnet.png)
+*Convolutional Occupancy Networks*
+
+
 ConvOccNet argues that although breaking into local feature grids improves scene complexity and generalization, it would still be beneficial to get global context as well. Therefore, ConvOccNets first produce point or voxel features, then they project them into a 2D or 3D grid and process the grid using a UNet. The UNet can propagate information globally over the scene. Then for a specific point features are calculated via bilinear or trilinear interpolation and then passed through an MLP to model the SDF function. Similar to other local works, ConvOccNet is able to learn narrow surfaces or hollow surfaces much better than their global counterpart while also being inherently consistent over grid boundaries.
 
 # Inverse Rendering Fundamentals
@@ -62,7 +71,10 @@ Joint modeling of shape and appearance in neural implicit fields is a difficult 
 First a differentiable renderer is designed with a differentiable ray marching method that is modeled by a LSTM. The LSTM finds surface depth by iterative refinements. An MLP then maps the 3D coordinate of the point to appearance features and finally RGB color. The colors are not view dependent. This model generalizes to category-level modeling through use of a hyper-net that maps MLP weights to a lower-dimensional sub-space that represents a category's appearance. A comparison with NeRF on how just adding volume rendering and positional encoding to the almost the same architecture boosts the PSNR much higher as opposed to this paper that searches for the surface using LSTM is interesting. 
 
 ### [Neural Volumes](https://research.fb.com/publications/neural-volumes-learning-dynamic-renderable-volumes-from-images/) @ SIGGRAPH 2019 – [arXiv](https://arxiv.org/abs/1906.07751) 
-![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/neuralvolumes.png)*Neural Volumes pipeline.*
+![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/neuralvolumes.png)
+*Neural Volumes pipeline.*
+
+
 This works aims at rendering new viewpoints from a set of seen viewpoint images. Neural volumes combines volumetric representation learning with ray marching technique to generate realistic and composable  renderings. Their setup is based on a set of fixed cameras. Therefore, they pass the input images through camera specific CNNs and then combine their latent codes by concatenating and passing them through and MLP. They argue that Voxel Decoding is superior to MLP based decoding. They decode into a template voxels, a warp field and an opacity 3D grid. They use the warp field to remove the inherent resolution limitation of voxels and be adaptable to different scene complexities at different parts of the space. Finally, they render using accumulating opacity along ray segments in a backpropagateable formulation. In order to remove smoke like artifacts they add two regularizers, one on total variation of the opacities and one a beta distribution on opacities. The results are impressively realistic. Since their setup is fixed they also have a background modeling setup. One interesting result they show is that using a learned background image improves the results even compare to giving the ground truth background.
 
 ### [Deffered Neural Rendering](https://niessnerlab.org/projects/thies2019neural.html) @ SIGGRAPH 2019 – [arXiv](https://arxiv.org/abs/1904.12356) 
@@ -96,7 +108,10 @@ This model is view-dependent and through a concept introduced in the paper name 
 The paper further can refine the camera parameters by back propagating all the way back to view direction and point position and shows promising results for pose estimation. Although the PSNR of results  are lower than what is SOTA right now, this paper is a great read and performs several important tasks together.
 
 ### [NeRF](https://www.matthewtancik.com/nerf) @ ECCV 2020 – [arXiv](https://arxiv.org/abs/2003.08934) 
-![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/nerf.png)*NeRF process: sampling points along the rays, transforming into predicted rgb and opacity, and finally volume rendering by integrating along the ray.*
+![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/nerf.png)
+*NeRF process: sampling points along the rays, transforming into predicted rgb and opacity, and finally volume rendering by integrating along the ray.*
+
+
 This work is the culmination of techniques we have discussed thus far. The goal is similar to Neural volumes, rendering new viewpoints from a set of seen images. They employ volume rendering techniques and use an MLP as the transfer function to map 3D points in space to color and transmittance. Nerf also has hierarchical aspects as in it trains on both coarse and fine scale. Nerf does not face boundary issues like what was discussed in DeepLS since they sample points randomly rather than having a set of fixed positions. A simple MLP however would still suffer from the oversmoothness. Nerf alleviates this shortcoming by augmenting the 3D point coordinates with positional encoding at different sinusoidal frequencies. Also, similar to Neural Volumes, Nerf conditions the rgb generation on the view direction to better handle viewpoint dependant artificats. Combination of all these techniques results in far superior renderings in a much less restricted setup compared to prior works such as Neural Volumes. 
 
 # Neural Light Fields
@@ -124,13 +139,19 @@ This work is an interesting use of transformers in neural implicit fields and th
 
 ### [Learning Neural Light Fields](https://neural-light-fields.github.io/) @ CVPR 2022 – [arXiv](https://arxiv.org/abs/2112.01523) 
 ![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/learninglightfields.png)
+*Local Light Fields procedure.*
+
+
 How about rather than learning point color/density and manually integrating (Nerf), we just learned the integral sum directly for a ray? In a light field formulation rather than the 3D point input is 4D representing a portion of ray parameterized by its intersection with two planes. The issue is that in comparison to having the 3D point as input, a portion of ray is unique to the specific ray and hard to aggregate over rays or generalize to unseen rays. Their solution is first to add an embedding network before the positional encoding to align and affine transform the ray planes. Secondly, they subdivide the space into local voxels and learn local light fields and render based on the opacity of ray portion when it hits a voxel. Given the constant radiancy and forward facing assumptions this method results in better modeling of shiny or reflective surfaces compared to Nerf.
 
 # Image Based Rendering
 Models who do not require backpropagation for novel view synthesis would be applicable to real time tasks. In these tasks usually a few images are given and the real time constraint allows for only a single forward pass of a neural network. The methods in this section are designed to condition on one or few images for volume rendering. The design decisions are mainly around how to formulate the conditioning while keeping the model fast to infer.
 
 ### [pixelNeRF](https://github.com/sxyu/pixel-nerf) @ CVPR 2021 – [arXiv](https://arxiv.org/abs/2012.02190) 
-![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/pixelNerf.png)*PixelNerf conditions on input images to generate 3D point feature vectors.*
+![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/pixelNerf.png)
+*PixelNerf conditions on input images to generate 3D point feature vectors.*
+
+
 One huge limitation of NeRF is being restricted to a single scene. In order to achieve generalizability over scenes NeRF input needs to be conditioned. PixelNerf conditions NeRF on a few images by finding the corresponding feature vector of the sampled point from a trainable projection of the input image. So in addition to position and viewpoint, PixelNerf concatenates a bilinearly intorpolated feature vector extracted from the input images. In case of conditioning on multiple input images, each feature vector is processed first with a shared MLP and then average pulled and processed with one more MLP block. The results show that for the cases with less than 6 images, pixelNerf provides a significant gain.
 
 ### [Stereo Radiance Fields](https://virtualhumans.mpi-inf.mpg.de/srf/) @ CVPR 2021 – [arXiv](https://arxiv.org/abs/2104.06935) 
@@ -145,7 +166,10 @@ A learnable module is able to compare feature vectors from all reference views a
  The comparison module learns useful comparison metrics to find correspondences and can be transferred to unseen scenes for generalization, then for better uality it can be fine-tuned on that scene. A failure case is when trying to model reflections and texture-less regions where finding correspondence is naturally hard. This is a good substitute for NeRF if sparse set of images is available of the scene. 
 
 ### [SRT](https://srt-paper.github.io/) @ CVPR 2022 – [arXiv](https://arxiv.org/abs/2111.13152) 
-![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/srt.png)*SRT procedure: ViT encoder + Transformer decoder.*
+![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/srt.png)
+*SRT procedure: ViT encoder + Transformer decoder.*
+
+
 Scene representation transformer aims at rendering novel viewpoints from a few seen images. Therefore, they rely on conditioning on images. SRT uses a ViT as the encoder by patching and running attention-transformer blocks. This enables better aggregation over input images as opposed to average pooling in PixelNerf. But SRT relies on patches as in ViT rather than exploiting direct point features of PixelNerf. Another important aspect is rather than typical Nerf models which concatenate viewpoint to the position for decoding, SRT uses attention with the ray viewpoint as the query. As a result of this changes they are able to outperform prior work, especially when seen viewpoints are not hand selected and the novel viewpoint is farther away from the seen viewpoints.
 
 # Multi Resolution
@@ -162,7 +186,9 @@ The quality of reconstruction is impressive and can beat baselines like NeRF and
 
 ### [Mip-NeRF](https://jonbarron.info/mipnerf/) @ ICCV 2021 – [arXiv](https://arxiv.org/abs/2103.13415) 
 ![](https://user-images.githubusercontent.com/3310961/118305131-6ce86700-b49c-11eb-99b8-adcf276e9fe9.jpg) 
-* MipNerf cone tracing vs Nerf ray tracing *
+*MipNerf cone tracing vs Nerf ray tracing*
+
+
 Sampling points along the ray for rendering using Nerf is an important aspect of high quality results. The typical approach is to have a two phase course and fine sampling strategies and relearn the implicit function to avoid aliasing. MipNerf suggests rather than a narrow ray, we consider a cone with a base of pixel width. Then we can integrate the points in frustums to get an approximate color/density. They approximate the frustum with a multivariate Gaussian and then transform them into the expected positional encoding of the points in the frustum. This method encodes the scale of frustums in the positional encoding which results in better disambiguation and antialiasing. Also, since they train a single network rather than a course and a fine version they are potentially faster. The results show if Nerf is super sampled to match the performance of MipNerf, MipNerf would be 22x faster.
 
 ### [Mip-NeRF-360](https://jonbarron.info/mipnerf360/) @ CVPR 2022 – [arXiv](https://arxiv.org/abs/2111.12077) 
@@ -176,7 +202,10 @@ NeRFs fail in modeling unbounded scenes for multiple reasons, the most important
 Having a set of fixed evaluation points as in voxel training enables much more efficient GPU utilization and leads to faster training times. Radiance Fields though rely on evaluating several random points along the ray. A compromise in proposed in this section's set of works by interpolating trainable embeddings. The general consensus is that having a non-linearity after the interpolation is a most for getting any reasonable results. 
 
 ### [InstantNGP](https://nvlabs.github.io/instant-ngp/) @ SIGGRAPH 2022 – [arXiv](https://arxiv.org/abs/2201.05989) 
-![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/instantngp.png)*InstantNGP hashes the positional embedding to learn trainable positional encoding.*
+![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/instantngp.png)
+*InstantNGP hashes the positional embedding to learn trainable positional encoding.*
+
+
 In order to scale to larger and more complex images and speed up the Nerf training, instant NGP proposes having a hierarchy of fixed voxel grid positions. A certain 3D point is then embedded as the interpolation of the features of the voxel corners around it. The embeddings from different levels are then concatenated and passed through an MLP similar to regular Nerf training. Using trainable embeddings allows for a very shallow and narrow MLP (2 layers of 64 neurons). Also hashing, looking up at fixed points, and interpolation enables fascinatingly optimized implementation over GPU. Furthermore, since each point has several levels and corners the MLP can implicitly resolve any hash collisions. The result is very sharp and high quality results in less than a minute of training, which essentially makes it a real time renderer. Furthermore, they keep an occupancy grid to guide their sampling strategy and avoid wasted computation.
 
 ### [Plenoxels](https://alexyu.net/plenoxels) @ CVPR 2022 – [arXiv](https://arxiv.org/abs/2112.05131) 
