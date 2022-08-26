@@ -232,13 +232,21 @@ Casting rays (mapping 3D points and potential pixel values) requires the camera 
 To grasp the difficulty level of learning a NeRF with unknown camera parameters, this paper analyzes learning camera poses and intrinsic parameters jointly with NeRF weights. All of the experiments are done on forward-facing scenes to simplify the problem and yet it is shown that in many cases if the camera path is slightly perturbed the camera pose estimation fails (and sometimes COLMAP also fails in this scenario!). This paper along with providing a dataset with perturbed camera poses, shows that joint learning of camera parameters and NeRF weights is trickier than just setting these parameters as learnable variables. 
 
 ### [GARF](https://sfchng.github.io/garf/) @ Arxiv 2022 – [arXiv](https://arxiv.org/abs/2204.05735) 
-At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.
+![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/GARF.png)
+*Comparison of BARF and GARF*
+
+
+Due to spectral bias of MLPs, learning high frequency data on vanilla MLPs is hard. To solve this NeRF uses positional encoding that maps positions to higher frequency spectra and forces MLP to learn detailed high frequency data. One disadvantage of this approach is that the high coefficients used in positional encoding, dampens the gradients in the backpropagation, if camera parameters are needed to be optimized. Although BARF, shows a coarse-to-fine learning method that gradually adds on the higher frequencies, this method needs careful scheduling. In GARF, the positional encoding is removed and Gaussian activation is used instead of ReLU in the MLP. Guassian activation is formulated as:
+
+$$\Phi(x) = exp(-\frac{x^2}{2\sigma^2}). $$
+
+ It is mathematically shown that this Gaussian-MLP is able to learn high frequency data and has a nice back-prop process that helps with camera pose estimation.
 
 # Learnable Appearance
 NeRF excels in controlled and static scenes. In practice such meticulously gathered datasets are not always available. The papers in this section utilize robust losses, bundle adjustment techniques, and  trainable embedding vectors to model such variations in the dataset. 
 
 ### [NeRF in-the-wild](https://nerf-w.github.io/) @ CVPR 2021 – [arXiv](https://arxiv.org/abs/2008.02268) 
-![](https://github.com/nerf-course/nerf-course.github.io/blob/main/images/nerfw.png)
+![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/nerfw.png)
 *Nerf in the wild pipeline.*
 
 Nerf models fail in an uncontrolled setup such as a collection of images on the internet. The main reason is Nerf assumes the color intensity of a point is the same from different viewpoints. But in a random collection of images of a scene there are both photometric variations such as illumination and transient objects such as moving pedestrians. 
