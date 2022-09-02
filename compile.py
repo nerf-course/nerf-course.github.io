@@ -62,6 +62,7 @@ output_path.parent.mkdir(parents=True, exist_ok=True)
 with open(output_path, 'w') as file:
   topics = topics_main.all()
   print(f"# Nerf Progression", file=file)
+  print(f"{: .no_toc }", file=file)
   for topic in tqdm.tqdm(topics):
     # TODO: could be done with filter, but not working?
     if "Exclude" in topic: continue
