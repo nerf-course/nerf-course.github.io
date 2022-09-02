@@ -1,12 +1,3 @@
-<details open markdown="block">
-  <summary>
-    Table of contents
-  </summary>
-  {: .text-delta }
-- TOC
-{:toc}
-</details>
-
 # Nerf Progression
 ## Preliminaries
  DeepSDF and OccNet are of the pioneering works that attempted at representing 3D scenes using implicit functions with neural networks. These two papers introduce auto-decoders as an important architecture for storing a 3D scenes that is not prone to over-smoothing like auto-encoders and can store detailed scenes by not losing any information through low-dimensional encoding like AE. The NASA paper then follows the same trend for modeling articulated bodies, containing important architectural ideas on how to use and combine multiple implicit functions that model rigid bodies to arrive at a non-rigid body model. 
@@ -183,7 +174,7 @@ A learnable module is able to compare feature vectors from all reference views a
 Scene representation transformer aims at rendering novel viewpoints from a few seen images. Therefore, they rely on conditioning on images. SRT uses a ViT as the encoder by patching and running attention-transformer blocks. This enables better aggregation over input images as opposed to average pooling in PixelNerf. But SRT relies on patches as in ViT rather than exploiting direct point features of PixelNerf. Another important aspect is rather than typical Nerf models which concatenate viewpoint to the position for decoding, SRT uses attention with the ray viewpoint as the query. As a result of this changes they are able to outperform prior work, especially when seen viewpoints are not hand selected and the novel viewpoint is farther away from the seen viewpoints.
 
 ## Multi Resolution
-Vanilla NeRF is only capable of modeling scenes at a certain resolution and in a bounded domain.  What happens if we want to model scenes in different resolution when viewing camera is not set at only one certain distance from center of the scene? 
+Vanilla NeRF is only capable of modeling scenes at a certain resolution and in a bounded domain.  What happens if we want to model scenes in different resolution when viewing camera is not set at only one certain distance from center of the scene? For real scenes NeRF only handles the forward facing views with unbounded range, but is it possible to model high-quality unbounded scenes with 360 degree views? Here we see how the aliasing problem is handled when multi-resolution images are inputs to NeRF (mip-NeRF), or how to handle this problem with the use of a multi-resolution grid (NSVF). Mip-NeRF-360 proposes solutions for modeling unbounded scenes while not losing high-quality rendering in NeRF.
 
 ### [NSVF](https://github.com/facebookresearch/NSVF) @ NeurIPS 2020 – [arXiv](https://arxiv.org/abs/2007.11571) 
 ![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/NSVF.png)
@@ -209,7 +200,7 @@ Sampling points along the ray for rendering using Nerf is an important aspect of
 NeRFs fail in modeling unbounded scenes for multiple reasons, the most important being the linear parametrization of space that leads to infinite depth for unbounded scenes and also the not robust importance sampling scheme that does not scale to bigger scenes. The contributions of Mip-NeRF-360 is three-fold. First, a new parameterization for the space is introduced to model unbounded scenes. The foreground is parametrized linearly as before, but the background is contracted (based on inverse depth) into a bounded sphere of fixed radius. Therefore distant points are distributed proportional to inverse depth i.e. the further the less detailed the scene becomes. A compatible sampling method is introduced to sample uniformly in inverse depth. Second, a hierarchical scheme is used for importance sampling. Two MLPs are used, one proposal MLP and the other NeRF MLP. The NeRF MLP works as before, but the proposal MLP tries to estimate weights that show the distribution of important segments  sampled along the ray. This distribution is then sampled and points are passed to NeRF MLP for rendering. The proposal weights are supervised through a propagation loss that penalizes proposal weights that underestimate NeRF weights. This loss only affects the proposal MLP and the gradient back-prop is not applied to NeRF MLP. Lastly, a new regularizer for suppressing floaters is introduced that encourages mass being centered closely mostly at one point over the ray.
 
 ## Fast Training
-Having a set of fixed evaluation points as in voxel training enables much more efficient GPU utilization and leads to faster training times. Radiance Fields though rely on evaluating several random points along the ray. A compromise in proposed in this section's set of works by interpolating trainable embeddings. The general consensus is that having a non-linearity after the interpolation is a most for getting any reasonable results. 
+Having a set of fixed evaluation points as in voxel training enables much more efficient GPU utilization and leads to faster training times. Radiance Fields though rely on evaluating several random points along the ray. A compromise is proposed in this section's set of works by interpolating trainable embeddings. The general consensus is that having a non-linearity after the interpolation is a must for getting high-quality results. 
 
 ### [InstantNGP](https://nvlabs.github.io/instant-ngp/) @ SIGGRAPH 2022 – [arXiv](https://arxiv.org/abs/2201.05989) 
 ![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/instantngp.png)
@@ -232,6 +223,8 @@ Having a set of regular grid positions, learn embedding for those fixed points, 
 With NeRF training becoming increasingly fast, the bottleneck of NeRF training is running unposed images through COLMAP to get camera parameters. The line of work in this section explores ideas and challenges of jointly optimizing camera parameters along NeRF and show promising results.
 
 ### [BARF](https://chenhsuanlin.bitbucket.io/bundle-adjusting-NeRF/) @ ICCV 2021 – [arXiv](https://arxiv.org/abs/2104.06405) 
+![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/barf.png)
+*L*
 Casting rays (mapping 3D points and potential pixel values) requires the camera calibration values. What can we do if we don't have the calibration parameters? Good news is the transformation from camera parameters to 3D points is potentially backpropagatable. Bad news is due to the positional encoding, different frequencies receive disproportionate gradients. Therefore, Barf suggests having different learning curriculums for different frequencies. They add a weight factor to reduce the gradient from the high frequencies at the start of training. The results on real scenes suggest that it can match the performance of SfM methods and render well aligned images with their bundle adjustment technique. 
 
 ### [Nerf--](https://nerfmm.active.vision/) @ Arxiv 2021 – [arXiv](https://arxiv.org/abs/2102.07064) 
