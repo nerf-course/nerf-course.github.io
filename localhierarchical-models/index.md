@@ -1,6 +1,6 @@
 ---
 layout: forward
-target: https://nerf-course.github.io/#local/hierarchical-models
+target: https://nerf-course.github.io/#localhierarchical-models
 title: Local/Hierarchical Models
 nav_order: 3
 ---

@@ -75,7 +75,7 @@ with open(output_path, 'w') as file:
 
     # --- Print title and TL;DR for topic
     print(f"## {topic['Topic']}", file=file)
-    toptitle = topic['Topic'].lower().replace(" ", "-")
+    toptitle = topic['Topic'].lower().replace(" ", "-").replace("/","")
     index_path = Path(f"{toptitle}/index.md")
     index_path.parent.mkdir(parents=True, exist_ok=True)
     with open(index_path, 'w') as ifile:
