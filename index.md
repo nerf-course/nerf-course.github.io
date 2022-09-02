@@ -1,26 +1,25 @@
 # Nerf Progression
+\{: .no_toc \}
 ## Preliminaries
  DeepSDF and OccNet are of the pioneering works that attempted at representing 3D scenes using implicit functions with neural networks. These two papers introduce auto-decoders as an important architecture for storing a 3D scenes that is not prone to over-smoothing like auto-encoders and can store detailed scenes by not losing any information through low-dimensional encoding like AE. The NASA paper then follows the same trend for modeling articulated bodies, containing important architectural ideas on how to use and combine multiple implicit functions that model rigid bodies to arrive at a non-rigid body model. 
 
 ### [OccNets](https://avg.is.tuebingen.mpg.de/publications/occupancy-networks) @ CVPR 2019 – [arXiv](https://arxiv.org/abs/1812.03828) 
 ![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/occnet.png)
-*An occupancy function can be modelled as the decision boundary for classifying inside and outside points.*
+*Left: An occupancy function can be modeled as the decision boundary for classifying inside and outside points. Right: The decision boundary corresponds to a surface in 3D.*
 
 
-The goal here is to learn a non-linear function to map a 3D point into a continuous function which models the inside, surface, and outside of an object. 
-Occnets trains an MLP to classify the points into inside, outside. The MLP has 5 residual blocks. The learnt decision boundary function can then be turned into a mesh using their introduced MISE method and a hyperparameter which thresholds the surface. MISE basically first hierarchically zooms in to the surface by gridding. Then runs a marching cube and refines it using first and second order gradients.
-
-Occnets can be adapted into different tasks by conditioning their function on different inputs. They utilize an embedding vector (no generalization) or an encoder. A Resnet  for image conditioning and a PointNet for pointcloud conditioning is used in the experiments. 
-
-Compared to previous work which use voxel, mesh, or point cloud representation occnet shows much better qualitative 
- and mostly better quantitative results. Interestingly it is slightly over-smooth which is an inherent property of modeling with an MLP. This is reflected in inferior L1-chamfer distance compared to AtlasNet (mesh based).
+The goal here is to learn a function to map a 3D point into a continuous function which models the inside and outside of an object. 
+OccNets trains an MLP to classify the points into inside, outside. The learnt decision boundary function can then be turned into a mesh using their introduced MISE method and a hyperparameter which thresholds the surface. MISE basically first hierarchically zooms in to the surface by gridding. Then runs a marching cube and refines it using first and second order gradients. The zoom and grid procedure helps MISE result in more detailed modeling than plain marching cubes.
+OccNets can be adapted into different tasks by conditioning their function on different inputs. A Resnet  for image conditioning and a PointNet for pointcloud conditioning is used in the experiments. 
+Compared to previous work which use voxel, mesh, or point cloud representation OccnNt shows much better qualitative 
+ and better quantitative results. Interestingly it is slightly over-smooth which is an inherent property of modeling with an MLP, because of the spectral bias theorem. This is reflected in inferior L1-chamfer distance compared to AtlasNet (mesh based). 
 
 ### [DeepSDF](https://github.com/facebookresearch/DeepSDF) @ CVPR 2019 – [arXiv](https://arxiv.org/abs/1901.05103) 
 ![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/DeepSDF.jpg)
 *Left: Signed Distance Function, Right: Auto-decoder vs. Auto-encoder*
 
 
-Exploring the idea of having 3D representations using neural implicit fields to achieve high quality reconstruction and compact models, this paper introduces SDF functions, a useful representation of object geometry, stored in deep networks. Given a mesh representation of an object, this method converts the mesh to a Signed Distance Function (SDF) where a point inside the object has negative value, zero on the surface and positive outside. The main idea is to use an auto-decoder (decoder + latent codes), that takes as input point coordinates and a shape latent code and outputs SDF value. The decoder weights and shape codes are optimized using MAP during training and in test time  only the shape code is optimized. Directly optimizing latent codes in an auto-decoder helps achieve finer details and generalize to test objects better, while in an auto-encoder setting the encoder always expects to receive inputs similar to what its seen at train time. Therefore in an auto-encoder some info and details are lost through encoding to lower dimensions while optimizing latent codes directly can overfit better to the given input.
+Exploring the idea of having 3D representations using neural implicit fields to achieve high quality reconstruction and compact models, this paper introduces SDF functions, a useful representation of object geometry, stored in deep networks. Given a mesh representation of an object, this method converts the mesh to a Signed Distance Function (SDF) where a point inside the object has negative value, zero on the surface and positive outside. The main idea is to use an auto-decoder (decoder + latent codes), that takes as input point coordinates and a shape latent code and outputs SDF value. The decoder weights and shape codes are optimized using MAP during training and in test time  only the shape code is optimized. Directly optimizing latent codes in an auto-decoder helps capture finer details and generalize to test objects better, while in an auto-encoder setting the encoder always expects to receive inputs similar to what its seen at train time. Therefore in an auto-encoder some info and details are lost through encoding to lower dimensions while optimizing latent codes directly can overfit better to the given input.
 
 ### [IMNET](https://github.com/czq142857/implicit-decoder) @ CVPR 2019 – [arXiv](https://arxiv.org/abs/1912.07372) 
 ![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/IMNET.png)
