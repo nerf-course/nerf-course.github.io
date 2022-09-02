@@ -224,7 +224,7 @@ With NeRF training becoming increasingly fast, the bottleneck of NeRF training i
 
 ### [BARF](https://chenhsuanlin.bitbucket.io/bundle-adjusting-NeRF/) @ ICCV 2021 – [arXiv](https://arxiv.org/abs/2104.06405) 
 ![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/barf.png)
-*L*
+*Left: *
 Casting rays (mapping 3D points and potential pixel values) requires the camera calibration values. What can we do if we don't have the calibration parameters? Good news is the transformation from camera parameters to 3D points is potentially backpropagatable. Bad news is due to the positional encoding, different frequencies receive disproportionate gradients. Therefore, Barf suggests having different learning curriculums for different frequencies. They add a weight factor to reduce the gradient from the high frequencies at the start of training. The results on real scenes suggest that it can match the performance of SfM methods and render well aligned images with their bundle adjustment technique. 
 
 ### [Nerf--](https://nerfmm.active.vision/) @ Arxiv 2021 – [arXiv](https://arxiv.org/abs/2102.07064) 
