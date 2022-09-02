@@ -62,20 +62,23 @@ output_path.parent.mkdir(parents=True, exist_ok=True)
 with open(output_path, 'w') as file:
   topics = topics_main.all()
   print("# Nerf Progression", file=file)
-  print("\{: .no_toc \}", file=file)
+  #print("\{: .no_toc \}", file=file)
   for topic in tqdm.tqdm(topics):
     # TODO: could be done with filter, but not working?
     if "Exclude" in topic: continue
 
     # --- Print title and TL;DR for topic
     print(f"## {topic['Topic']}", file=file)
-    index_path = Path(f"{topic['Topic']}/index.md")
+    toptitle = topic['Topic'].lower().replace(" ", "-")
+    index_path = Path(f"{toptitle}/index.md")
     index_path.parent.mkdir(parents=True, exist_ok=True)
     with open(index_path, 'w') as ifile:
       print("---", file=ifile)
-      print("layout: forward", file=ifile)
-      print(f"target: https://nerf-course.github.io/#{topic['Topic']}", file=ifile)
+      print("layout: default", file=ifile)
+      print(f"target: https://nerf-course.github.io/#{toptitle}", file=ifile)
+      print(f"title: {topic['Topic']}", file=ifile)
       print("---", file=ifile)
+      print("hello", file=ifile)
     tldr = topic['TL;DR'] if "TL;DR" in topic else lorem
     print(f"{tldr}\n", file=file)
 
