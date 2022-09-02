@@ -1,4 +1,5 @@
-# Preliminaries
+# Nerf Progression
+## Preliminaries
  DeepSDF and OccNet are of the pioneering works that attempted at representing 3D scenes using implicit functions with neural networks. These two papers introduce auto-decoders as an important architecture for storing a 3D scenes that is not prone to over-smoothing like auto-encoders and can store detailed scenes by not losing any information through low-dimensional encoding like AE. The NASA paper then follows the same trend for modeling articulated bodies, containing important architectural ideas on how to use and combine multiple implicit functions that model rigid bodies to arrive at a non-rigid body model. 
 
 ### [OccNets](https://avg.is.tuebingen.mpg.de/publications/occupancy-networks) @ CVPR 2019 – [arXiv](https://arxiv.org/abs/1812.03828) 
@@ -28,7 +29,7 @@ Exploring the idea of having 3D representations using neural implicit fields to 
 
 This paper is very similar in methodology to OccNet but also explores the idea of combining implicit fields auto-encoder with GANs to generate new shapes. The GANs (IM-GAN) are trained with the higher level features extracted from AE. This paper is a good preliminary work in generative neural implicit fields.
 
-# Local Hierarchical Models
+## Local Hierarchical Models
 The neural implicit functions showed impressive results while using less memory and being less computationally exhaustive compared to mesh or voxel representations. But, they generally suffer from oversmoothing of surfaces and is not easy to scale them. This new set of works, all show that by splitting the scene into local grids the models are now much better at modelling high frequency surfaces. Fourier theory gives us an insight to why this happens; based on the time scaling attribute of Fourier series, one can increase modelling power  in a module with maximum representation bandwidth of frequency F0 by frequency inverse scaling. These class of models offer a trade-off between voxel based learning and implicit fields. Each work suggests different strategies for their divide and concur methods.
 
 ### [DeepLS](https://arxiv.org/abs/2003.10983) @ ECCV 2020 – [arXiv](https://arxiv.org/abs/2003.10983) 
@@ -58,7 +59,7 @@ The results show faster rendering but comparative results to the baselines like 
 
 ConvOccNet argues that although breaking into local feature grids improves scene complexity and generalization, it would still be beneficial to get global context as well. Therefore, ConvOccNets first produce point or voxel features, then they project them into a 2D or 3D grid and process the grid using a UNet. The UNet can propagate information globally over the scene. Then for a specific point features are calculated via bilinear or trilinear interpolation and then passed through an MLP to model the SDF function. Similar to other local works, ConvOccNet is able to learn narrow surfaces or hollow surfaces much better than their global counterpart while also being inherently consistent over grid boundaries.
 
-# Inverse Rendering Fundamentals
+## Inverse Rendering Fundamentals
 Up to now we discussed 3D neural representations, either overfitting to single scene (NGLOD), or with generalization (OccNet/DeepSDF), but "is it possible to supervise using 2D images only?" This is the objective of inverse rendering. But how can this be achieved? If we assume known geometry, then inverse rendering just needs to memorize view-dependent appearance changes (DNR),  while if geometry is not known, we can learn it by either introducing differentiable ray marching (SRN) or differentiable volume rendering (Neural Volumes). As the rendering operation is differentiable, gradients can be back-propagated to the underlying 3D model captured by the 2D images.
 
 ### [SRN](https://vsitzmann.github.io/srns/) @ NeurIPS 2019 – [arXiv](https://arxiv.org/abs/1906.01618) 
@@ -85,8 +86,8 @@ This works aims at rendering new viewpoints from a set of seen viewpoint images.
 Detailed and precise texture modeling is essential for a good inverse rendering model. This paper focuses on having learned textures to model view-dependent appearance. The geometry is not modeled. Unlike traditional texture maps, learned neural textures are used to store high dimensional features rather than RGB. These can be converted to pixel color using standard texel-to-pixel pipelines but with a differentiable renderer. The texture sampling is hierarchical similar to mimaps to overcome resolution differences. The sampling is made differentiable through bilinear interpolation. 
 One of the distinct and interesting results in this paper is that instead of using a fully connected network as a renderer, using U-Net renderer results in higher quality textures through reasoning about the neighboring areas to have pixel-level consistency. Also animation synthesis is particularly easy and fast using this approach, for example in face reenactment because this approach learns the texture for an actors face completely, for different expression there is no need for extra textures stored and queried.
 
-# Neural Radiance Fields
-A great approach for rendering novel views of a scene or object is to model them as radiance fields which maps each point in space to a color and a transmittance. There can be different mapping techniques, most successful of which is using MLPs. These techniques enables rendering in 3D directly from a set of 2D images. 
+## Neural Radiance Fields
+A great approach for rendering novel views of a scene or object is to model them as radiance fields which maps each point in space to a view-dependent color and density.  These techniques enables learning 3D scenes directly from a set of 2D images. 
 
 ### [Volume Rendering Tutorial](https://drops.dagstuhl.de/opus/volltexte/2010/2709/pdf/18.pdf) @ Schloss Dagstuhl 2010 – 
 This tutorial gives a thorough formulation for different direct volume rendering techniques. Most of the formulations provided in this paper are backpropagateable. Therefore, easily applicable to neural renderings. 
@@ -114,8 +115,8 @@ The paper further can refine the camera parameters by back propagating all the w
 
 This work is the culmination of techniques we have discussed thus far. The goal is similar to Neural volumes, rendering new viewpoints from a set of seen images. They employ volume rendering techniques and use an MLP as the transfer function to map 3D points in space to color and transmittance. Nerf also has hierarchical aspects as in it trains on both coarse and fine scale. Nerf does not face boundary issues like what was discussed in DeepLS since they sample points randomly rather than having a set of fixed positions. A simple MLP however would still suffer from the oversmoothness. Nerf alleviates this shortcoming by augmenting the 3D point coordinates with positional encoding at different sinusoidal frequencies. Also, similar to Neural Volumes, Nerf conditions the rgb generation on the view direction to better handle viewpoint dependant artificats. Combination of all these techniques results in far superior renderings in a much less restricted setup compared to prior works such as Neural Volumes. 
 
-# Neural Light Fields
-Although radiance fields are great at modeling appearance they fail in certain cases. For surface rendering, in the case of a non-solid object the modeling fails and for volume rendering, when the viewing ray does not necessarily travel along a straight line (e.g. refraction) the model fails. 4D light fields are the models that are capable of modeling these failure cases but only when applied to objects that have a convex hull and no occlusion. In 4D light fields for every viewing direction only one value of radiance is stored and hence the model only memorizes a mapping from view direction to radiance, not caring for solidness of surfaces, volumetric properties or accumulated color like surface/volume rendering. For this same reason it is incapable of modeling occlusion and fails to capture occluded surfaces. In LFN and LFNR we see different parameterization of light fields and how well they work on specularity and refraction in both forward-facing and 360 degree scenes. The Learning Neural Light Fields, we see an important idea on combining light fields with explicit grids and how that helps overcome the occlusion problem in light fields to some extent.
+## Neural Light Fields
+Although radiance fields are great at modeling appearance they fail in certain cases. For surface rendering, in the case of a non-solid object the modeling fails and for volume rendering, when the viewing ray does not necessarily travel along a straight line (e.g. refraction) the model fails. 4D light fields are the models that are capable of modeling these failure cases but only when applied scenes viewed from outside their convex hull. In 4D light fields for every viewing direction only one value of radiance is stored and hence the model only memorizes a mapping from view direction to radiance (i.e. the output of integration in NeRF volume rendering), not caring for solidness of surfaces, volumetric properties or accumulated color like surface/volume rendering. For this same reason it is incapable of modeling occlusion, it is not 3D consistent and fails to capture occluded surfaces. In LFN and LFNR we see different parameterization of light fields and how well they work on specularity and refraction in both forward-facing and 360 degree scenes. Learning Neural Light Fields, we see an important idea on combining light fields with explicit grids and how to some extent that helps overcome occlusion problem in light fields.
 
 ### [LFN: Light Field Networks](https://www.vincentsitzmann.com/lfns) @ NeurIPS 2021 – [arXiv](https://arxiv.org/abs/2106.02634) 
 ![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/LFN.png)
@@ -144,8 +145,8 @@ This work is an interesting use of transformers in neural implicit fields and th
 
 How about rather than learning point color/density and manually integrating (Nerf), we just learned the integral sum directly for a ray? In a light field formulation rather than the 3D point input is 4D representing a portion of ray parameterized by its intersection with two planes. The issue is that in comparison to having the 3D point as input, a portion of ray is unique to the specific ray and hard to aggregate over rays or generalize to unseen rays. Their solution is first to add an embedding network before the positional encoding to align and affine transform the ray planes. Secondly, they subdivide the space into local voxels and learn local light fields and render based on the opacity of ray portion when it hits a voxel. Given the constant radiancy and forward facing assumptions this method results in better modeling of shiny or reflective surfaces compared to Nerf.
 
-# Image Based Rendering
-Models who do not require backpropagation for novel view synthesis would be applicable to real time tasks. In these tasks usually a few images are given and the real time constraint allows for only a single forward pass of a neural network. The methods in this section are designed to condition on one or few images for volume rendering. The design decisions are mainly around how to formulate the conditioning while keeping the model fast to infer.
+## Image Based Rendering
+The methods in this section are designed to condition volume rendering on few images. The design decisions are mainly around how to formulate the conditioning while keeping the model fast to infer. When given a new scene, there is no need for training and a novel view can be queried from reference views by projecting query points onto them and feature matching.
 
 ### [pixelNeRF](https://github.com/sxyu/pixel-nerf) @ CVPR 2021 – [arXiv](https://arxiv.org/abs/2012.02190) 
 ![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/pixelNerf.png)
@@ -172,8 +173,8 @@ A learnable module is able to compare feature vectors from all reference views a
 
 Scene representation transformer aims at rendering novel viewpoints from a few seen images. Therefore, they rely on conditioning on images. SRT uses a ViT as the encoder by patching and running attention-transformer blocks. This enables better aggregation over input images as opposed to average pooling in PixelNerf. But SRT relies on patches as in ViT rather than exploiting direct point features of PixelNerf. Another important aspect is rather than typical Nerf models which concatenate viewpoint to the position for decoding, SRT uses attention with the ray viewpoint as the query. As a result of this changes they are able to outperform prior work, especially when seen viewpoints are not hand selected and the novel viewpoint is farther away from the seen viewpoints.
 
-# Multi Resolution
-Vanilla NeRF is only capable of modeling scenes at a certain resolution and in a bounded domain. The papers in this section explore the idea of how to make NeRF multi-resolution and unbounded. Mip-NeRF shows that modeling radiance along a cone as opposed to a ray helps with anti-aliasing in modeling different resolutions. Mip-NeRF-360 builds on top of that idea and models unbounded scenes through a non-linear parametrization of space coordinates. It also shows an interesting hierarchical importance sampling scheme that helps with high quality rendering in big scenes. NSVF has coarse to fine learning method to learn radiance at different LODs and combines hundreds of tiny NeRFs to achieve that.
+## Multi Resolution
+Vanilla NeRF is only capable of modeling scenes at a certain resolution and in a bounded domain.  What happens if we want to model scenes in different resolution when viewing camera is not set at only one certain distance from center of the scene? 
 
 ### [NSVF](https://github.com/facebookresearch/NSVF) @ NeurIPS 2020 – [arXiv](https://arxiv.org/abs/2007.11571) 
 ![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/NSVF.png)
@@ -198,7 +199,7 @@ Sampling points along the ray for rendering using Nerf is an important aspect of
 
 NeRFs fail in modeling unbounded scenes for multiple reasons, the most important being the linear parametrization of space that leads to infinite depth for unbounded scenes and also the not robust importance sampling scheme that does not scale to bigger scenes. The contributions of Mip-NeRF-360 is three-fold. First, a new parameterization for the space is introduced to model unbounded scenes. The foreground is parametrized linearly as before, but the background is contracted (based on inverse depth) into a bounded sphere of fixed radius. Therefore distant points are distributed proportional to inverse depth i.e. the further the less detailed the scene becomes. A compatible sampling method is introduced to sample uniformly in inverse depth. Second, a hierarchical scheme is used for importance sampling. Two MLPs are used, one proposal MLP and the other NeRF MLP. The NeRF MLP works as before, but the proposal MLP tries to estimate weights that show the distribution of important segments  sampled along the ray. This distribution is then sampled and points are passed to NeRF MLP for rendering. The proposal weights are supervised through a propagation loss that penalizes proposal weights that underestimate NeRF weights. This loss only affects the proposal MLP and the gradient back-prop is not applied to NeRF MLP. Lastly, a new regularizer for suppressing floaters is introduced that encourages mass being centered closely mostly at one point over the ray.
 
-# Fast Training
+## Fast Training
 Having a set of fixed evaluation points as in voxel training enables much more efficient GPU utilization and leads to faster training times. Radiance Fields though rely on evaluating several random points along the ray. A compromise in proposed in this section's set of works by interpolating trainable embeddings. The general consensus is that having a non-linearity after the interpolation is a most for getting any reasonable results. 
 
 ### [InstantNGP](https://nvlabs.github.io/instant-ngp/) @ SIGGRAPH 2022 – [arXiv](https://arxiv.org/abs/2201.05989) 
@@ -218,7 +219,7 @@ Sending queries through neural nets is expensive in computation and if the numbe
 ### [ReLUFields](https://geometry.cs.ucl.ac.uk/group_website/projects/2022/relu_fields/) @ SIGGRAPH 2022 – [arXiv](https://arxiv.org/abs/2205.10824) 
 Having a set of regular grid positions, learn embedding for those fixed points, and then interpolate them is much faster than running an MLP on a huge set of randomly sampled points along all the rays. But the MLP adds flexibility to the modeling both in terms of high frequency modeling and view dependent effects. ReLUFields suggests by just adding a ReLU non linearity after the interpolation. They also incorporate the coarse to fine training regime by first training at low resolution grid size. Then they upsample using trilinear interpolation and continue training. They use the same emission absorption ray marching formulation as nerf. At about 10 minutes of training time ReLUFields are able to match the results of original Nerf which is trained for several hours.
 
-# Camera Extrinsics
+## Camera Extrinsics
 With NeRF training becoming increasingly fast, the bottleneck of NeRF training is running unposed images through COLMAP to get camera parameters. The line of work in this section explores ideas and challenges of jointly optimizing camera parameters along NeRF and show promising results.
 
 ### [BARF](https://chenhsuanlin.bitbucket.io/bundle-adjusting-NeRF/) @ ICCV 2021 – [arXiv](https://arxiv.org/abs/2104.06405) 
@@ -240,7 +241,7 @@ Due to spectral bias of MLPs, learning high frequency data on vanilla MLPs is ha
 
  It is mathematically shown that this Gaussian-MLP is able to learn high frequency data and has a nice back-prop process that helps with camera pose estimation.
 
-# Learnable Appearance
+## Learnable Appearance
 NeRF excels in controlled and static scenes. In practice such meticulously gathered datasets are not always available. The papers in this section utilize robust losses, bundle adjustment techniques, and  trainable embedding vectors to model such variations in the dataset. 
 
 ### [NeRF in-the-wild](https://nerf-w.github.io/) @ CVPR 2021 – [arXiv](https://arxiv.org/abs/2008.02268) 

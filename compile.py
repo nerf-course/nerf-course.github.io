@@ -61,12 +61,13 @@ output_path = Path("index.md")
 output_path.parent.mkdir(parents=True, exist_ok=True)
 with open(output_path, 'w') as file:
   topics = topics_main.all()
+  print(f"# Nerf Progression", file=file)
   for topic in tqdm.tqdm(topics):
     # TODO: could be done with filter, but not working?
     if "Exclude" in topic: continue
 
     # --- Print title and TL;DR for topic
-    print(f"# {topic['Topic']}", file=file)
+    print(f"## {topic['Topic']}", file=file)
     tldr = topic['TL;DR'] if "TL;DR" in topic else lorem
     print(f"{tldr}\n", file=file)
 
