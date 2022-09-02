@@ -78,7 +78,7 @@ First a differentiable renderer is designed with a differentiable ray marching m
 This works aims at rendering new viewpoints from a set of seen viewpoint images. Neural volumes combines volumetric representation learning with ray marching technique to generate realistic and composable  renderings. Their setup is based on a set of fixed cameras. Therefore, they pass the input images through camera specific CNNs and then combine their latent codes by concatenating and passing them through and MLP. They argue that Voxel Decoding is superior to MLP based decoding. They decode into a template voxels, a warp field and an opacity 3D grid. They use the warp field to remove the inherent resolution limitation of voxels and be adaptable to different scene complexities at different parts of the space. Finally, they render using accumulating opacity along ray segments in a backpropagateable formulation. In order to remove smoke like artifacts they add two regularizers, one on total variation of the opacities and one a beta distribution on opacities. The results are impressively realistic. Since their setup is fixed they also have a background modeling setup. One interesting result they show is that using a learned background image improves the results even compare to giving the ground truth background.
 
 ### [Deffered Neural Rendering](https://niessnerlab.org/projects/thies2019neural.html) @ SIGGRAPH 2019 – [arXiv](https://arxiv.org/abs/1904.12356) 
-![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/Deffered.png)
+![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/Deferred.png)
 *Deferred Neural Rendering applications*
 
 
