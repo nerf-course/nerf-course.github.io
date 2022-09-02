@@ -78,6 +78,8 @@ with open(output_path, 'w') as file:
       print("layout: forward", file=ifile)
       print(f"target: https://nerf-course.github.io/#{toptitle}", file=ifile)
       print(f"title: {topic['Topic']}", file=ifile)
+      print(f"nav_order: {page_num}", file=ifile)
+      page_num = page_num + 1
       print("---", file=ifile)
       print("hello", file=ifile)
     tldr = topic['TL;DR'] if "TL;DR" in topic else lorem

@@ -41,7 +41,7 @@ Compared to DeepSDF, DeepLS has both impressive quantitative and qualitative res
 
 ### [NGLOD](https://nv-tlabs.github.io/nglod/) @ CVPR 2021 – [arXiv](https://arxiv.org/abs/2101.10994) 
 ![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/NGLOD.png)
-*Combining embedded values from different LODs in NGLOD pipeline*
+*NGLOD combines learned embedded values from different LODs using trilinear interpolation at each level.*
 
 
 Neural implicit fields are usually stored in fixed-size neural networks and for rendering there is a computationally heavy and time consuming process of many queries from the network for each pixel. To allow real-time and high-quality rendering, NGLOD uses an Octree based approach to model an SDF function with different levels of detail. At every level of detail (LOD) there exists a grid with certain resolution. For each point the embedded values in the eight corners of all the voxels containing the point, up to the level of detail wanted, are trilinearly interpolated and summed and then passed through an MLP to predict the SDF value.
@@ -49,37 +49,36 @@ For rendering, because the octree is sparse, a combination of AABB intersection 
 
 ### [ConvOccNets](https://pengsongyou.github.io/conv_onet) @ ECCV 2020 – [arXiv](https://arxiv.org/abs/2003.04618) 
 ![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/convoccnet.png)
-*Convolutional Occupancy Networks*
+*Convolutional Occupancy Networks use CNN to model consistency between embedded features of neighboring nodes. *
 
 
-ConvOccNet argues that although breaking into local feature grids improves scene complexity and generalization, it would still be beneficial to get global context as well. Therefore, ConvOccNets first produce point or voxel features, then they project them into a 2D or 3D grid and process the grid using a UNet. The UNet can propagate information globally over the scene. Then for a specific point features are calculated via bilinear or trilinear interpolation and then passed through an MLP to model the SDF function. Similar to other local works, ConvOccNet is able to learn narrow surfaces or hollow surfaces much better than their global counterpart while also being inherently consistent over grid boundaries.
+ConvOccNet argues that although breaking into local feature grids improves scene complexity and generalization, it would still be beneficial to get context fro the close neighborhood of a node as well. Therefore, ConvOccNets first produce point or voxel features, then they project them into a 2D or 3D grid and process the grid using a UNet. The UNet can propagate information globally over the scene. Then for a specific point features are calculated via bilinear or trilinear interpolation and then passed through an MLP to model the SDF function. Similar to other local works, ConvOccNet is able to learn narrow surfaces or hollow surfaces much better than their global counterpart while also being inherently consistent over grid boundaries. This is due to being able to exploit past experience to inpaint missing parts in the input.
 
 ## Inverse Rendering Fundamentals
 Up to now we discussed 3D neural representations, either overfitting to single scene (NGLOD), or with generalization (OccNet/DeepSDF), but "is it possible to supervise using 2D images only?" This is the objective of inverse rendering. But how can this be achieved? If we assume known geometry, then inverse rendering just needs to memorize view-dependent appearance changes (DNR),  while if geometry is not known, we can learn it by either introducing differentiable ray marching (SRN) or differentiable volume rendering (Neural Volumes). As the rendering operation is differentiable, gradients can be back-propagated to the underlying 3D model captured by the 2D images.
 
-### [SRN](https://vsitzmann.github.io/srns/) @ NeurIPS 2019 – [arXiv](https://arxiv.org/abs/1906.01618) 
-![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/SRN.png)
-*SRN pipeline*
-
-
-Joint modeling of shape and appearance in neural implicit fields is a difficult problem. This paper is one of the first papers that introduces an algorithm for tackling this problem. The idea is to first identify the surface and then learn the color for the surface. 
-
-First a differentiable renderer is designed with a differentiable ray marching method that is modeled by a LSTM. The LSTM finds surface depth by iterative refinements. An MLP then maps the 3D coordinate of the point to appearance features and finally RGB color. The colors are not view dependent. This model generalizes to category-level modeling through use of a hyper-net that maps MLP weights to a lower-dimensional sub-space that represents a category's appearance. A comparison with NeRF on how just adding volume rendering and positional encoding to the almost the same architecture boosts the PSNR much higher as opposed to this paper that searches for the surface using LSTM is interesting. 
-
-### [Neural Volumes](https://research.fb.com/publications/neural-volumes-learning-dynamic-renderable-volumes-from-images/) @ SIGGRAPH 2019 – [arXiv](https://arxiv.org/abs/1906.07751) 
-![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/neuralvolumes.png)
-*Neural Volumes pipeline.*
-
-
-This works aims at rendering new viewpoints from a set of seen viewpoint images. Neural volumes combines volumetric representation learning with ray marching technique to generate realistic and composable  renderings. Their setup is based on a set of fixed cameras. Therefore, they pass the input images through camera specific CNNs and then combine their latent codes by concatenating and passing them through and MLP. They argue that Voxel Decoding is superior to MLP based decoding. They decode into a template voxels, a warp field and an opacity 3D grid. They use the warp field to remove the inherent resolution limitation of voxels and be adaptable to different scene complexities at different parts of the space. Finally, they render using accumulating opacity along ray segments in a backpropagateable formulation. In order to remove smoke like artifacts they add two regularizers, one on total variation of the opacities and one a beta distribution on opacities. The results are impressively realistic. Since their setup is fixed they also have a background modeling setup. One interesting result they show is that using a learned background image improves the results even compare to giving the ground truth background.
-
 ### [Deferred Neural Rendering](https://niessnerlab.org/projects/thies2019neural.html) @ SIGGRAPH 2019 – [arXiv](https://arxiv.org/abs/1904.12356) 
 ![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/Deferred.png)
-*Deferred Neural Rendering applications*
+**
 
 
 Detailed and precise texture modeling is essential for a good inverse rendering model. This paper focuses on having learned textures to model view-dependent appearance. The geometry is not modeled. Unlike traditional texture maps, learned neural textures are used to store high dimensional features rather than RGB. These can be converted to pixel color using standard texel-to-pixel pipelines but with a differentiable renderer. The texture sampling is hierarchical similar to mimaps to overcome resolution differences. The sampling is made differentiable through bilinear interpolation. 
 One of the distinct and interesting results in this paper is that instead of using a fully connected network as a renderer, using U-Net renderer results in higher quality textures through reasoning about the neighboring areas to have pixel-level consistency. Also animation synthesis is particularly easy and fast using this approach, for example in face reenactment because this approach learns the texture for an actors face completely, for different expression there is no need for extra textures stored and queried.
+
+### [SRN](https://vsitzmann.github.io/srns/) @ NeurIPS 2019 – [arXiv](https://arxiv.org/abs/1906.01618) 
+![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/SRN.png)
+*SRN achieves inverse rendering of a scene by introducing a differentiable ray marching algorithm based on using LSTM, while memorizing 3D scene eometry and appearance inside an MLP*
+
+
+Joint modeling of shape and appearance in neural implicit fields is a difficult problem. This paper is  the first to model 3D coordinate system of a scene from 2D images. The idea is to first identify the surface and then learn the color for the surface. 
+First a differentiable renderer is designed with a differentiable ray marching method that is modeled by a LSTM. The LSTM finds surface depth by iterative refinements. An MLP then maps the 3D coordinate of the point to appearance features and finally RGB color. The colors are not view dependent. This model generalizes to category-level modeling through use of a hyper-net that maps MLP weights to a lower-dimensional sub-space that represents a category's appearance. 
+
+### [Neural Volumes](https://research.fb.com/publications/neural-volumes-learning-dynamic-renderable-volumes-from-images/) @ SIGGRAPH 2019 – [arXiv](https://arxiv.org/abs/1906.07751) 
+![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/neuralvolumes.png)
+*Neural Volumes uses volume rendering to achieve novel view synthesis given a set of input images of the scene.*
+
+
+This works aims at rendering new viewpoints from a set of seen viewpoint images. Neural volumes combines volumetric representation learning with ray marching technique to generate realistic and composable  renderings. They pass the input images through camera specific CNNs and then combine their latent codes by concatenating and passing them through and MLP. Then decode into a template voxels, a warp field and an opacity 3D grid. They use the warp field to remove the inherent resolution limitation of voxels and be adaptable to different scene complexities at different parts of the space. Finally, they render using accumulating opacity along ray segments in a backpropagateable formulation. This is one of the pioneering works that uses volume rendering to do novel view synthesis. Furthermore, in order to remove smoke-like artifacts they add two regularizers, one on total variation of the opacities and one a beta distribution on opacities. The results are impressively realistic. Since their setup is fixed they also have a background modeling setup. One interesting result they show is that using a learned background image improves the results even compare to giving the ground truth background.
 
 ## Neural Radiance Fields
 A great approach for rendering novel views of a scene or object is to model them as radiance fields which maps each point in space to a view-dependent color and density.  These techniques enables learning 3D scenes directly from a set of 2D images. 
