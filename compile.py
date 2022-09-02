@@ -66,7 +66,7 @@ with open(output_path, 'w') as file:
   print("title: Home", file=file)
   print("nav_order: 1", file=file)
   print("---", file=file)
-  print("# Nerf Progression", file=file)
+  print("# NeRF Starter Kit: a conceptual journey", file=file)
   #print("\{: .no_toc \}", file=file)
   page_num = 2
   for topic in tqdm.tqdm(topics):

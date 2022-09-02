@@ -3,7 +3,7 @@ layout: default
 title: Home
 nav_order: 1
 ---
-# Nerf Progression
+# NeRF Starter Kit: a conceptual journey
 ## Preliminaries
  DeepSDF and OccNet are of the pioneering works that attempted at representing 3D scenes using implicit functions with neural networks. These two papers introduce auto-decoders as an important architecture for storing a 3D scenes that is not prone to over-smoothing like auto-encoders and can store detailed scenes by not losing any information through low-dimensional encoding like AE. The NASA paper then follows the same trend for modeling articulated bodies, containing important architectural ideas on how to use and combine multiple implicit functions that model rigid bodies to arrive at a non-rigid body model. 
 
