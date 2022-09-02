@@ -2,7 +2,7 @@
 To dive into the world of neural implicit fields, we first have to become familiar with the ABCs of this field. DeepSDF and OccNet are of the pioneering works that attempted at representing 3D scenes using implicit functions in the form of neural networks. These two papers introduce auto-decoders as an important architecture for storing a 3D scenes that is not prone to over-smoothing like auto-encoders and can store detailed scenes by not losing any information through low-dimensional encoding like AE. The NASA paper then follows the same trend for modeling articulated bodies, containing important architectural ideas on how to use and combine multiple implicit functions that model rigid bodies to arrive at a non-rigid body model. Lastly IMNET is a pioneering work for using 3D implicit neural models in generative uses.
 
 ### [OccNets](https://avg.is.tuebingen.mpg.de/publications/occupancy-networks) @ CVPR 2019 – [arXiv](https://arxiv.org/abs/1812.03828) 
-![](https://dellaert.github.io/images/NeRF/ON-teaser.png)
+![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/occnet.png)
 *An occupancy function can be modelled as the decision boundary for classifying inside and outside points.*
 
 
