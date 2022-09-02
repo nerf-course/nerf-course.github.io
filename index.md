@@ -15,7 +15,7 @@ Compared to previous work which use voxel, mesh, or point cloud representation o
  and mostly better quantitative results. Interestingly it is slightly over-smooth which is an inherent property of modeling with an MLP. This is reflected in inferior L1-chamfer distance compared to AtlasNet (mesh based).
 
 ### [DeepSDF](https://github.com/facebookresearch/DeepSDF) @ CVPR 2019 – [arXiv](https://arxiv.org/abs/1901.05103) 
-![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/DeepSDF.png)
+![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/DeepSDF.jpg)
 *Left: Signed Distance Function, Right: Auto-decoder vs. Auto-encoder*
 
 
