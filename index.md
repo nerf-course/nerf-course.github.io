@@ -1,3 +1,8 @@
+---
+layout: default
+title: Home
+nav_order: 1
+---
 # Nerf Progression
 ## Preliminaries
  DeepSDF and OccNet are of the pioneering works that attempted at representing 3D scenes using implicit functions with neural networks. These two papers introduce auto-decoders as an important architecture for storing a 3D scenes that is not prone to over-smoothing like auto-encoders and can store detailed scenes by not losing any information through low-dimensional encoding like AE. The NASA paper then follows the same trend for modeling articulated bodies, containing important architectural ideas on how to use and combine multiple implicit functions that model rigid bodies to arrive at a non-rigid body model. 
@@ -59,11 +64,12 @@ Up to now we discussed 3D neural representations, either overfitting to single s
 
 ### [Deferred Neural Rendering](https://niessnerlab.org/projects/thies2019neural.html) @ SIGGRAPH 2019 – [arXiv](https://arxiv.org/abs/1904.12356) 
 ![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/Deferred.png)
-**
+*:Given an object with a valid uv-map parameterization and an associated
+Neural Texture map as input, the standard graphics pipeline is used to render a view-dependent screen-space feature map*
 
 
-Detailed and precise texture modeling is essential for a good inverse rendering model. This paper focuses on having learned textures to model view-dependent appearance. The geometry is not modeled. Unlike traditional texture maps, learned neural textures are used to store high dimensional features rather than RGB. These can be converted to pixel color using standard texel-to-pixel pipelines but with a differentiable renderer. The texture sampling is hierarchical similar to mimaps to overcome resolution differences. The sampling is made differentiable through bilinear interpolation. 
-One of the distinct and interesting results in this paper is that instead of using a fully connected network as a renderer, using U-Net renderer results in higher quality textures through reasoning about the neighboring areas to have pixel-level consistency. Also animation synthesis is particularly easy and fast using this approach, for example in face reenactment because this approach learns the texture for an actors face completely, for different expression there is no need for extra textures stored and queried.
+Detailed and precise texture modeling is essential for a good inverse rendering model. This paper focuses on having learned textures to model view-dependent appearance. The geometry is not modeled and assumed a priori. Unlike traditional texture maps, learned neural textures are used to store high dimensional features rather than RGB that can be converted to pixel color using classic texel-to-pixel pipelines. The texture sampling is hierarchical similar to mimaps to overcome resolution differences. The sampling is made differentiable through bilinear interpolation. 
+One of the distinct and interesting results in this paper is that instead of using a fully connected network as a renderer, using U-Net renderer results in higher quality textures through reasoning about the neighboring areas to have pixel-level consistency. 
 
 ### [SRN](https://vsitzmann.github.io/srns/) @ NeurIPS 2019 – [arXiv](https://arxiv.org/abs/1906.01618) 
 ![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/SRN.png)
@@ -84,12 +90,9 @@ This works aims at rendering new viewpoints from a set of seen viewpoint images.
 A great approach for rendering novel views of a scene or object is to model them as radiance fields which maps each point in space to a view-dependent color and density.  These techniques enables learning 3D scenes directly from a set of 2D images. 
 
 ### [Volume Rendering Tutorial](https://drops.dagstuhl.de/opus/volltexte/2010/2709/pdf/18.pdf) @ Schloss Dagstuhl 2010 – 
-This tutorial gives a thorough formulation for different direct volume rendering techniques. Most of the formulations provided in this paper are backpropagateable. Therefore, easily applicable to neural renderings. 
-
-The general algroithm in volume rendering is mapping a 3D scalar field into a 3D field
-color c and extinction coefficient τ by learning a transfer function (e.g. neural network). Then we can render by integrating along a ray.
-
-First, we should define the transparency function T(s) which is the probability that the ray does not hit any particles for a length of s from they ray origin. They drive the formulation for T(s) to be the exponentiated integral of individual extinction coefficients. We can then discretize the formulation by assuming the opacity segments have constant values. This paper refers to several interesting related work that offer more complex formulations without such assumption. The article also provides formulations of local and global lighting and scattering alongside an spectral volume rendering formulation.
+This tutorial gives a thorough formulation for different direct volume rendering techniques. Most of the formulations provided in this paper are backpropagateable. Therefore, easily applicable to neural renderings. While Neural Volumes was one of the first papers to use volume rendering, this paper does not assume fixed cameras and formulates volume rendering precisely.
+The general approach in volume rendering is mapping a 3D scalar field into a 3D field color c and extinction coefficient τ by learning a transfer function (e.g. neural network). Then we can render by integrating along a ray.
+First, we should define the transparency function T(s) which is the probability that the ray does not hit any particles for a length of s from they ray origin. They drive the formulation for T(s) to be the exponentiated integral of individual extinction coefficients. We can then discretize the formulation by assuming the opacity segments have constant values. This paper refers to several interesting related work that offer more complex formulations without such assumption.
 
 ### [IDR](https://lioryariv.github.io/idr/) @ NeurIPS 2020 – [arXiv](https://arxiv.org/abs/2003.09852) 
 ![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/IDR.png)

@@ -61,9 +61,14 @@ output_path = Path("index.md")
 output_path.parent.mkdir(parents=True, exist_ok=True)
 with open(output_path, 'w') as file:
   topics = topics_main.all()
+  print("---", file=file)
+  print("layout: default", file=file)
+  print("title: Home", file=file)
+  print("nav_order: 1", file=file)
+  print("---", file=file)
   print("# Nerf Progression", file=file)
   #print("\{: .no_toc \}", file=file)
-  page_num = 1
+  page_num = 2
   for topic in tqdm.tqdm(topics):
     # TODO: could be done with filter, but not working?
     if "Exclude" in topic: continue
