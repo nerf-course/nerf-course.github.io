@@ -4,7 +4,7 @@ title: Home
 nav_order: 1
 ---
 # NeRF Starter Kit: a conceptual journey
-## Preliminaries
+## Global Models
  DeepSDF and OccNet are of the pioneering works that attempted at representing 3D scenes using implicit functions with neural networks. These two papers introduce auto-decoders as an important architecture for storing a 3D scenes that is not prone to over-smoothing like auto-encoders and can store detailed scenes by not losing any information through low-dimensional encoding like AE. The NASA paper then follows the same trend for modeling articulated bodies, containing important architectural ideas on how to use and combine multiple implicit functions that model rigid bodies to arrive at a non-rigid body model. 
 
 ### [OccNets](https://avg.is.tuebingen.mpg.de/publications/occupancy-networks) @ CVPR 2019 – [arXiv](https://arxiv.org/abs/1812.03828) 
@@ -25,14 +25,14 @@ Compared to previous work which use voxel, mesh, or point cloud representation O
 
 Exploring the idea of having 3D representations using neural implicit fields to achieve high quality reconstruction and compact models, this paper introduces SDF functions, a useful representation of object geometry, stored in deep networks. Given a mesh representation of an object, this method converts the mesh to a Signed Distance Function (SDF) where a point inside the object has negative value, zero on the surface and positive outside. The main idea is to use an auto-decoder (decoder + latent codes), that takes as input point coordinates and a shape latent code and outputs SDF value. The decoder weights and shape codes are optimized using MAP during training and in test time  only the shape code is optimized. Directly optimizing latent codes in an auto-decoder helps capture finer details and generalize to test objects better, while in an auto-encoder setting the encoder always expects to receive inputs similar to what its seen at train time. Therefore in an auto-encoder some info and details are lost through encoding to lower dimensions while optimizing latent codes directly can overfit better to the given input.
 
-### [IMNET](https://github.com/czq142857/implicit-decoder) @ CVPR 2019 – [arXiv](https://arxiv.org/abs/1912.07372) 
-![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/IMNET.png)
-*Comparison of IM-GAN generations and CNN-GAN*
+### [NASA](https://virtualhumans.mpi-inf.mpg.de/nasa/) @ ECCV 2020 – [arXiv](https://arxiv.org/abs/1912.03207) 
+![](https://raw.githubusercontent.com/nerf-course/nerf-course.github.io/main/images/NASA.png)
+*NASA: three different models of non-rigid body. The explicit conversion of coordinates is done prior to mapping to occupancy through a decoder.*
 
 
-This paper is very similar in methodology to OccNet but also explores the idea of combining implicit fields auto-encoder with GANs to generate new shapes. The GANs (IM-GAN) are trained with the higher level features extracted from AE. This paper is a good preliminary work in generative neural implicit fields.
+Implicit neural representations for articulated and non-rigid bodies is an interesting problem that is addressed in this paper. NASA uses an occupancy net for articulated bodies and progressively presents 3 models of body, where in first one the body is a rigid object (U), then a piece-wise rigid object (R) and finally deformable (D). In R model, the query coordinates are transformed to each rigid piece's canonical frame, while in U model the whole body is considered one rigid object and query points are canonicalized based on the main body frame. This paper shows the importance of converting coordinates to canonical frame before passing it into an MLP (in this case query/joint coordinates are converted to canonical frame by inverse joint poses). This is due to the fact that MLPs cannot model matrix multiplication well enough and the explicit conversion on input helps MLP to model the occupancy.
 
-## Local Hierarchical Models
+## Local/Hierarchical Models
 The neural implicit functions showed impressive results while using less memory and being less computationally exhaustive compared to mesh or voxel representations. But, they generally suffer from oversmoothing of surfaces and is not easy to scale them. This new set of works, all show that by splitting the scene into local grids the models are now much better at modelling high frequency surfaces. Fourier theory gives us an insight to why this happens; based on the time scaling attribute of Fourier series, one can increase modelling power  in a module with maximum representation bandwidth of frequency F0 by frequency inverse scaling. These class of models offer a trade-off between voxel based learning and implicit fields. Each work suggests different strategies for their divide and concur methods.
 
 ### [DeepLS](https://arxiv.org/abs/2003.10983) @ ECCV 2020 – [arXiv](https://arxiv.org/abs/2003.10983) 
